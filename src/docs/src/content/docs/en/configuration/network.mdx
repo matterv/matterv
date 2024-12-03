@@ -1,0 +1,83 @@
+---
+title: Network Configuration
+description: Configure network for VMs on MatterV Host
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+# Configuring Network for MatterV Host
+
+After installing MatterV Host, you need to configure the network that will be used by virtual machines. This guide explains the network model and configuration process.
+
+## Network Model
+
+MatterV Host currently supports a simple network model called "Basic Network":
+
+- **Basic Network**: A single network where all VMs can communicate with each other
+- Only one basic network is supported per MatterV host
+- VLANs are not supported in the current version
+- The network is implemented using Linux bridge
+
+:::note[Limitations]
+- Only one basic network can be configured per host
+- VLAN support will be added in future releases
+:::
+
+## Physical Network Interface
+
+Before configuring the basic network, you need to identify which physical network interface will be used.
+
+<Steps>
+  1. List available network interfaces using `ifconfig`
+  2. Review the output to identify available interfaces
+  3. Choose one physical interface for the basic network
+  4. Note the chosen interface name (e.g., ens192)
+</Steps>
+
+Example `ifconfig` output:
+```bash
+ens192: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255
+        ...
+
+ens256: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.2.101  netmask 255.255.255.0  broadcast 192.168.2.255
+        ...
+```
+
+:::caution[Network Selection]
+If your host has multiple NICs, you can only use one for the basic network. Choose your network interface carefully, as it will be reconfigured and temporarily disconnected during bridge setup.
+:::
+
+## Creating Basic Network
+
+Once you've identified the physical network interface, follow these steps to create the basic network:
+
+<Steps>
+  1. Navigate to the MatterV Host installation directory: `cd /opt/matterv/host/`
+  2. Run the setup script with your chosen network interface: `sudo bash ./setup_bridge.sh ens192`
+  3. Wait for the script to complete (network will be interrupted briefly)
+  4. Verify the bridge creation: `ip link show virbr0`
+</Steps>
+
+:::danger[Network Interruption]
+Running the setup script will temporarily interrupt the network connection on the specified interface for a few seconds. Plan accordingly and ensure you have alternative access if needed.
+:::
+
+## After Configuration
+
+When the setup is complete:
+- A new bridge interface `virbr0` will be created
+- The physical interface will be added to the bridge
+- VMs can now be configured to use this network
+- The host's original IP address will be moved to the bridge interface
+
+## Verification Steps
+
+<Steps>
+  1. Check bridge status: `brctl show virbr0`
+  2. Verify network connectivity on the host
+  3. Check bridge interface status: `ip addr show virbr0`
+  4. Verify physical interface is attached to bridge: `brctl show`
+</Steps>

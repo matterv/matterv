@@ -1,0 +1,17 @@
+package $packageName;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class $className
+#if($baseClass && $baseClass != "")
+extends $baseClass
+#end
+{
+    #foreach($field in $fields)
+    @JsonProperty("${field.getOrigName()}")
+    public ${field.type().toJavaType()} ${field.toJavaName()};
+
+    #end
+}

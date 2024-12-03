@@ -1,0 +1,55 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  
+ * Copyright Oxide Computer Company
+ */
+
+.DropdownMenuContent {
+  @apply z-popover min-w-36 rounded border p-0 bg-raise border-secondary;
+
+  & .DropdownMenuItem {
+    @apply block w-full cursor-pointer select-none border-b py-2 pl-3 pr-6 text-left text-sans-md text-secondary border-secondary last:border-b-0;
+
+    &.destructive {
+      @apply text-destructive;
+    }
+
+    &[data-disabled] {
+      @apply cursor-not-allowed text-disabled;
+    }
+
+    &.destructive[data-disabled] {
+      @apply text-destructive-disabled;
+    }
+
+    &[data-focus] {
+      outline: none;
+      @apply bg-tertiary;
+    }
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.DropdownMenuContent,
+.DocsPopoverPanel {
+  animation: slide-down 0.2s ease;
+}
+
+@media (prefers-reduced-motion) {
+  .DropdownMenuContent,
+  .DocsPopoverPanel {
+    animation-name: none;
+  }
+}

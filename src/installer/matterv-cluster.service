@@ -1,0 +1,22 @@
+[Unit]
+Description=Matterv Cluster Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/matterv/cluster/
+ExecStart=/usr/bin/java -jar /opt/matterv/cluster/cluster.jar server /opt/matterv/cluster/app.yaml
+ExecStop=/bin/kill -15 $MAINPID
+Restart=always
+RestartSec=10
+
+LimitNOFILE=65536
+LimitNPROC=4096
+
+Environment=JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+Environment=JAVA_OPTS="-Xms512m -Xmx4096m"
+
+[Install]
+WantedBy=multi-user.target

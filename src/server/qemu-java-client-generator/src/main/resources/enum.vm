@@ -1,0 +1,25 @@
+#**
+ * This is a Velocity template for generating a Java enumeration.
+ *#
+package $packageName;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum $className {
+
+#foreach ($value in $values)
+    $value.name()("$value.originalName()")#if ($foreach.hasNext()),#end
+#end
+;
+
+private final java.lang.String value;
+
+$className(java.lang.String value) {
+    this.value = value;
+}
+
+@JsonValue
+public java.lang.String getValue() {
+    return value;
+}
+}

@@ -1,0 +1,67 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  
+ * Copyright Oxide Computer Company
+ */
+
+.ox-tabs.full-width {
+  @apply !mx-0 !w-full;
+}
+
+.ox-tabs.full-width .ox-tabs-panel {
+  @apply mx-[var(--content-gutter)];
+}
+
+.ox-tabs-list {
+  @apply mb-8 flex bg-transparent;
+}
+
+.ox-tabs-list:after {
+  @apply block w-full border-b border-secondary;
+  content: ' ';
+}
+.ox-tabs.full-width .ox-tabs-list:before {
+  @apply block w-10 min-w-max flex-shrink-0 border-b border-secondary;
+  content: ' ';
+}
+
+.ox-tabs-panel:focus-visible {
+  @apply outline outline-2 outline-offset-[1rem] outline-accent-secondary;
+}
+
+.ox-tab {
+  @apply h-10 space-x-2 whitespace-nowrap border-b px-1.5 pb-1 pt-2 uppercase !no-underline text-mono-sm text-tertiary border-secondary;
+}
+
+.ox-tab[data-state='active'],
+.ox-tab.is-selected {
+  @apply text-accent border-accent;
+}
+
+.ox-tab > * {
+  @apply rounded bg-transparent px-1.5 py-1;
+}
+.ox-tab:hover > * {
+  @apply bg-hover;
+}
+
+.ox-tab[data-state='active']:hover > *,
+.ox-tab.is-selected:hover > * {
+  @apply !bg-accent-secondary;
+}
+
+.ox-tab > .ox-badge {
+  @apply -mt-1 select-none text-current;
+}
+
+.ox-tab[data-state='inactive'] > .ox-badge,
+.ox-tab:not(.is-selected) > .ox-badge {
+  @apply bg-disabled;
+}
+
+.ox-tab[data-state='active'] > .ox-badge,
+.ox-tab.is-selected > .ox-badge {
+  @apply bg-accent-secondary;
+}

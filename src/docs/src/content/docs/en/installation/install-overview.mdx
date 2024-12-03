@@ -1,0 +1,151 @@
+---
+title: MatterV Platform Installation Guide
+description: MatterV Platform Installation Guide.
+---
+import { Card, CardGrid, LinkCard, TabItem, Tabs } from "@astrojs/starlight/components";
+
+This guide will help you understand the platform architecture and prepare for installation.
+:::tip[Before you begin]
+Before starting installation, ensure you have reviewed all system requirements and completed the pre-installation checklist.
+:::
+## Platform Overview
+
+MatterV platform consists of two main components:
+
+<CardGrid>
+  <Card title="MatterV Cluster" icon="laptop">
+    The management and orchestration component that controls and monitors all MatterV Hosts
+  </Card>
+  <Card title="MatterV Host" icon="server">
+    The hypervisor component that runs virtual machines on physical servers
+  </Card>
+</CardGrid>
+
+## Deployment Options
+
+### Production Environment (Recommended)
+<Tabs>
+  <TabItem label="Production Environment">
+    ### Production Environment (Recommended)
+
+    In production environments, we recommend installing MatterV Cluster and MatterV Host on separate machines:
+
+    #### MatterV Cluster
+    - Install on a dedicated management server
+    - Requires only one cluster instance per environment
+    - Manages multiple MatterV Hosts
+
+    #### MatterV Host
+    - Install on each physical server that will run virtual machines
+    - Can be installed on multiple hosts
+    - All hosts are managed by a single MatterV Cluster
+  </TabItem>
+  <TabItem label="Test Environment">
+    ### Test/Evaluation Environment
+
+    For testing or evaluation purposes, you can install both components on a single machine:
+    - Requires higher system specifications (combines both component requirements)
+    - Suitable for proof of concept or learning environment
+    - Not recommended for production use
+  </TabItem>
+</Tabs>
+
+## System Requirements
+
+### MatterV Cluster Requirements
+| Component | Minimum Requirement |
+| ---- | --- |
+| **Operating System** | RHEL 9.5, Rocky Linux 9.5, or AlmaLinux 9.5 |
+| **Storage** | 20GB free disk space |
+| **Memory** | 8GB RAM |
+| **CPU** | x86 architecture, 8 cores
+
+### MatterV Host Requirements
+
+<Tabs>
+  <TabItem label="System">
+    | Component | Minimum Requirement |
+    |-----------|-------------------|
+    | Operating System | RHEL 9.5, Rocky Linux 9.5, or AlmaLinux 9.5 |
+    | Memory | 16GB RAM |
+    | CPU | x86 architecture, 8 cores |
+  </TabItem>
+  <TabItem label="Storage">
+    ### Recommended Storage Layout
+
+    MatterV Host requires a specific disk partition layout for optimal performance and management:
+
+    | Partition | Minimum Size | Recommended Size | Purpose |
+    |-----------|-------------|------------------|---------|
+    | OS Partition (`/`) | 20GB | 50GB | Operating system and MatterV Host software |
+    | Data Partition (`/mnt`) | 100GB | 500GB+ | Virtual machine storage, images, and snapshots |
+
+    :::caution[Storage Planning]
+    The data partition size should be planned according to:
+    - Number of VMs you plan to host
+    - Size of VM disk images
+    - Snapshot requirements
+    - Future growth expectations
+    :::
+
+    #### Example Partition Layout
+    ```bash
+    # Example partition layout for a 1TB drive
+    /dev/sda1    /boot        1GB
+    /dev/sda2    /            50GB     # OS partition
+    /dev/sda3    swap         16GB     # Equal to RAM size
+    /dev/sda4    /mnt    Remaining space     # Data partition
+    ```
+
+    :::note
+    For production environments, we recommend using LVM (Logical Volume Management) for flexible storage management and future expansion.
+    :::
+  </TabItem>
+</Tabs>
+
+### Combined Installation Requirements (Test/Evaluation)
+| Component | Minimum Requirement |
+| ---- | --- |
+| **Operating System** | RHEL 9.5, Rocky Linux 9.5, or AlmaLinux 9.5 |
+| **Storage** | 40GB free disk space |
+| **Memory** | 24GB RAM |
+| **CPU** | x86 architecture, 16 cores
+
+### Pre-Installation Checklist
+Before proceeding with the installation, ensure:
+
+* Operating System
+  * Verify you have a clean installation of one of the supported operating systems
+  * Ensure the system is updated to the latest packages
+
+* Hardware Verification
+  * For MatterV Host, verify virtualization is enabled:
+```shell
+# Check if CPU supports virtualization
+grep -E 'vmx|svm' /proc/cpuinfo
+
+# Verify virtualization is enabled in BIOS/UEFI
+lsmod | grep kvm
+```
+
+* Network Requirements
+
+  * Ensure network connectivity between cluster and host components (if installing separately)
+
+## Installation Order
+* Install and configure MatterV Cluster first
+* Install MatterV Host(s)
+* Connect hosts to the cluster
+
+## Next Steps
+After confirming all requirements are met, proceed to:
+
+
+<CardGrid>
+  <Card title="Install MatterV Cluster" icon="rocket">
+    [Get started with MatterV Cluster installation →](/en/installation/install-cluster/)
+  </Card>
+  <Card title="Install MatterV Host" icon="server">
+    [Set up your first MatterV Host →](/en/installation/install-host/)
+  </Card>
+</CardGrid>

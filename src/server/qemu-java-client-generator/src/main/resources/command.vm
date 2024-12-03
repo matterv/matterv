@@ -1,0 +1,46 @@
+package $packageName;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import computer.matter.qemu.common.QemuCommandExecutionFailed;
+import computer.matter.qemu.common.QemuCommandRequest;
+import computer.matter.qemu.common.QemuConnection;
+import computer.matter.qemu.common.QemuResponse;
+
+
+public class $className
+{
+private final ObjectMapper om;
+private final QemuConnection connection;
+
+public $className(ObjectMapper m, QemuConnection connection) {
+  om = m;
+  this.connection = connection;
+}
+
+#foreach($field in $fields)
+public QemuResponse<${field.returnType().toJavaType()}> ${field.toJavaName()}(${field.arguments()})
+{
+    var req = new QemuCommandRequest<${field.argumentType().toJavaType()}>();
+    req.name = "${field.command()}";
+    #if(${field.arguments()} != "")
+        req.arguments = input;
+    #end
+
+    try {
+        var reqStr = om.writeValueAsString(req);
+        connection.write(reqStr);
+
+        var rspStr = connection.read();
+        while(rspStr.contains("timestamp")) {
+             rspStr = connection.read();
+        }
+        return om.readValue(rspStr, new TypeReference<QemuResponse<${field.returnType().toJavaType()}>>() {});
+    } catch (JsonProcessingException e) {
+        throw new QemuCommandExecutionFailed(e);
+    }
+}
+
+#end
+}

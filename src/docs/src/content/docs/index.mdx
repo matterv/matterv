@@ -1,0 +1,44 @@
+---
+# src/content/docs/index.mdx
+title: Welcome to MatterV
+description: Get started learning and hacking with MatterV.
+template: splash
+hero:
+  tagline: |
+    The simple, modern and open source Virtual Machine management platform.
+  actions:
+    - text: Getting Started
+      link: /en/getting-started/matterv/
+      icon: right-arrow
+      variant: primary
+    - text: Try MatterV Now
+      link: https://demo.matterv.com/
+      icon: rocket
+      variant: primary
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+<CardGrid stagger>
+  <Card title="Easy Migration" icon="add-document">
+    Seamlessly transition from VMware vCenter to MatterV with our intuitive migration tools.
+    Our step-by-step process ensures minimal downtime and maximum efficiency,
+    allowing you to quickly leverage the power of MatterV in your enterprise environment.
+  </Card>
+  <Card title="Open Source" icon="star">
+    All code are open sourced, free to use, free to distribution and free to modify. No ifs, ands, or buts.
+  </Card>
+  <Card title="Simple & Stable" icon="rocket">
+    Experience a user-friendly interface coupled with rock-solid reliability.
+    MatterV's intuitive design reduces the learning curve for your team,
+    while our robust architecture ensures high availability and
+    performance for your critical workloads.
+  </Card>
+  <Card title="Hardware Compatibility" icon="puzzle">
+    Support for a wide range of hardware eliminates the need for costly upgrades.
+    MatterV is designed to work with your existing infrastructure,
+    from legacy systems to the latest hardware,
+    maximizing your current investments while providing a path for future growth.
+  </Card>
+</CardGrid>
+

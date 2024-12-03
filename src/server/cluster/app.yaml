@@ -1,0 +1,42 @@
+database:
+  driverClass: org.sqlite.JDBC
+  # the JDBC URL
+  url: jdbc:sqlite:/opt/matterv/cluster/db/data.db
+  autoCommentsEnabled: false
+
+logging:
+  level: DEBUG
+  loggers:
+    "computer.matter": ALL
+  appenders:
+    - type: file
+      currentLogFilename: /var/log/matterv-cluster/cluster.log
+
+      archivedLogFilenamePattern: /var/log/matterv-cluster/cluster-%d.log.gz
+
+      archivedFileCount: 7
+
+      timeZone: UTC
+
+webRootDir: "/opt/matterv/cluster/web"
+
+server:
+  applicationConnectors:
+    - type: https
+      port: 8543
+      keyStorePath: "/opt/matterv/cluster/certs/matterverse.jks"
+      keyStorePassword: "matterversestorepass"
+      trustStorePath: "/opt/matterv/cluster/certs/truststore.jks"
+      trustStorePassword: "mattervpass"
+      validateCerts: false
+      disableSniHostCheck: true
+      wantClientAuth: true
+  adminConnectors:
+    - type: https
+      port: 8544
+      keyStorePath: "/opt/matterv/cluster/certs/matterverse.jks"
+      keyStorePassword: "matterversestorepass"
+      trustStorePath: "/opt/matterv/cluster/certs/truststore.jks"
+      trustStorePassword: "mattervpass"
+      disableSniHostCheck: true
+      validateCerts: false

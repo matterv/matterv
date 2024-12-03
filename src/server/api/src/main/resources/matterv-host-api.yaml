@@ -1,0 +1,689 @@
+openapi: 3.0.0
+info:
+  title: Identity Service
+  description: |
+    It's a service that allows you to create and manage resources on a MatterV host.
+  version: "1.0"
+servers:
+  - url: /api
+
+paths:
+  /v1/ping:
+    get:
+      tags:
+        - auth
+      summary: Ping
+      operationId: ping
+      responses:
+        '200':
+          description: Success
+
+  /v1/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JSESSIONID=abcde12345; Path=/; HttpOnly; Secure
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+
+  /v1/auth/session:
+    get:
+      tags:
+        - auth
+      summary: Get session Id
+      operationId: getSessionId
+      responses:
+        '200':
+          description: Successful get session id
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+  /v1/logout:
+    post:
+      summary: User Logout
+      description: Invalidate the user's session
+      tags:
+        - auth
+      operationId: logout
+      responses:
+        '200':
+          description: Successful logout
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+
+  /v1/job/{jobId}:
+    post:
+      tags:
+        - job
+      summary: Get job.
+      operationId: queryJob
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Job'
+  /v1/job/object/{objectId}:
+    post:
+      tags:
+        - job
+      summary: List jobs for an object.
+      operationId: listJobsForObject
+      parameters:
+        - $ref: './schema.yaml#/components/parameters/PageParam'
+        - $ref: './schema.yaml#/components/parameters/LimitParam'
+        - name: objectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedJobResponse'
+  /v1/vm:
+    post:
+      tags:
+        - vm
+      summary: Create a virtual machine.
+      description: |
+        Create a virtual machine.
+      operationId: createVm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/CreateVirtualMachineRequest'
+      responses:
+        '200':
+          description: A virtual machine is created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/CreateVirtualMachineResponse'
+    get:
+      tags:
+        - vm
+      summary: Get a list of virtual machines.
+      description: Get a list of virtual machines.
+      operationId: GetVms
+      parameters:
+        - $ref: './schema.yaml#/components/parameters/PageParam'
+        - $ref: './schema.yaml#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedVMResponse'
+  /v1/vm/{vmId}:
+    get:
+      tags:
+        - vm
+      summary: Get vm by vm id
+      operationId: getVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get vm by id
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/VirtualMachine'
+  /v1/vm/{vmId}/poweroff:
+    post:
+      tags:
+        - vm
+      summary: Power off a virtual machine.
+      description: |
+        Power off a virtual machine.
+      operationId: powerOffVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Power off virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PowerOffVirtualMachineResponse'
+  /v1/vm/{vmId}/poweron:
+    post:
+      tags:
+        - vm
+      summary: Power on a virtual machine.
+      description: |
+        Power on a virtual machine.
+      operationId: powerOnVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Power on virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PowerOnVirtualMachineResponse'
+
+  /v1/vm/{vmId}/onfig:
+    post:
+      tags:
+        - vm
+      summary: Config a virtual machine.
+      description: |
+        Config a virtual machine.
+      operationId: configVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Config virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/ConfigVirtualMachineResponse'
+  /v1/vm/{vmId}/reset:
+    post:
+      tags:
+        - vm
+      summary: Reset a virtual machine.
+      description: |
+        Reset a virtual machine.
+      operationId: resetVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reset virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/ResetVirtualMachineResponse'
+
+  /v1/host:
+    get:
+      tags:
+        - host
+      summary: Get MatterV host info.
+      description: |
+        Get information about MatterV host, such as host's CPU, memory, ip address etc.
+      operationId: getHostInfo
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Host'
+        '404':
+          description: MatterV host not found
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+        '500':
+          description: Unknown error occurs.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+    post:
+      tags:
+        - host
+      summary: Update host
+      operationId: UpdateHost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHostRequest'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Host'
+        '500':
+          description: Unknown error occurs.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+
+
+  /v1/storage/{storageId}/upload:
+    post:
+      summary: Upload a file
+      description: Upload a single file with optional metadata
+      operationId: uploadFile
+      tags:
+        - storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadFileReq'
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          description: storage id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful upload
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '413':
+          description: Payload too large
+        '500':
+          description: Internal server error
+
+  /v1/storage:
+    post:
+      tags:
+        - storage
+      summary: Add a storage to a host
+      operationId: addStorage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/AddStorageRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Storage'
+  /v1/storage/{storageId}/files:
+    get:
+      tags:
+        - storage
+      summary: List files and directories
+      description: Retrieve a list of files and directories for a specific storage. The list includes items at the root level and one level deep. Supports file and directory names with spaces and special characters.
+      operationId: listFiles
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "/"
+          example: "/My%20Documents"
+        - name: page
+          in: query
+          schema:
+            type: string
+          description: Page number to fetch
+          required: false
+        - $ref: './schema.yaml#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/ListFilesResponse'
+        '400':
+          description: Bad request (e.g., invalid path)
+        '404':
+          description: Storage or path not found
+        '500':
+          description: Internal server error
+
+    post:
+      tags:
+        - storage
+      summary: Create file
+      description: Create file.
+      operationId: createFile
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFileReq'
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          description: Bad request (e.g., invalid path)
+        '404':
+          description: Storage or path not found
+        '500':
+          description: Internal server error
+
+  /v1/host/physical:
+    get:
+      tags:
+        - host
+      summary: Get MatterV host physical info.
+      description: |
+        Get physical information about MatterV host, such as network, storage etc.
+      operationId: getPhysicalHostInfo
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhysicalHost'
+        '404':
+          description: MatterV host not found
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+        '500':
+          description: Unknown error occurs.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+
+  /v1/host/summary:
+    get:
+      tags:
+        - host
+      summary: Get summary of MatterV host.
+      operationId: getHostSummary
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostSummary'
+        '404':
+          description: MatterV host not found
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+        '500':
+          description: Unknown error occurs.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+
+  /v1/host/refresh:
+    post:
+      tags:
+        - host
+      summary: Get summary of MatterV host.
+      operationId: refreshHost
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostRefreshResponse'
+        '404':
+          description: MatterV host not found
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+        '500':
+          description: Unknown error occurs.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Error'
+components:
+  schemas:
+    AttachStorageRequest:
+      type: object
+      properties:
+        type:
+          $ref: './schema.yaml#/components/schemas/StorageType'
+        uri:
+          type: string
+      required:
+        - type
+        - uri
+    PhysicalHost:
+      type: "object"
+      properties:
+        cpu:
+          type: integer
+          format: int64
+        memory:
+          type: integer
+          format: int64
+        storage:
+          type: array
+          items:
+            $ref: './schema.yaml#/components/schemas/Storage'
+        network:
+          type: array
+          items:
+            $ref: './schema.yaml#/components/schemas/PhysicalNetwork'
+      required:
+        - cpu
+        - memory
+        - storage
+        - network
+
+    CpuInfo:
+      type: object
+      properties:
+        cores:
+          type: integer
+        model:
+          type: string
+        mhz:
+          type: number
+      required:
+        - cores
+        - model
+        - mhz
+    MemoryInfo:
+      type: object
+      properties:
+        totalKb:
+          type: integer
+          format: int64
+        freeKb:
+          type: integer
+          format: int64
+        availableKb:
+          type: integer
+          format: int64
+      required:
+        - totalKb
+        - freeKb
+        - availableKb
+    HostSummary:
+      type: "object"
+      properties:
+        vms:
+          type: integer
+          format: int64
+        runningVms:
+          type: integer
+          format: int64
+        cpuInfo:
+          $ref: '#/components/schemas/CpuInfo'
+        memoryInfo:
+          $ref: '#/components/schemas/MemoryInfo'
+        hostInfo:
+          $ref: './schema.yaml#/components/schemas/HostInfo'
+        version:
+          type: string
+      required:
+        - vms
+        - runningVms
+        - cpu
+        - memory
+        - version
+        - cpuInfo
+        - memoryInfo
+        - hostInfo
+    CreateBridgeOnNicRequest:
+      type: object
+      properties:
+        hostId:
+          type: string
+        network:
+          $ref: './schema.yaml#/components/schemas/PhysicalNetwork'
+      required:
+        - hostId
+        - network
+    UpdateHostRequest:
+      type: object
+      properties:
+        hostName:
+          type: string
+      required:
+        - hostName
+    UpdateHostResponse:
+      type: object
+      properties:
+        hostId:
+          type: string
+        jobId:
+          type: string
+      required:
+        - hostId
+        - jobId
+    Disk:
+      type: object
+      properties:
+        id:
+          type: string
+        diskSizeInGB:
+          type: string
+      required:
+        - id
+        - diskSizeInGB
+
+    HostRefreshResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+      required:
+        - jobId
+    UploadFileReq:
+      type: object
+      properties:
+        data:
+          type: string
+        offset:
+          type: integer
+          format: int64
+        filePath:
+          type: string
+      required:
+        - data
+        - offset
+        - filePath
+    CreateFileReq:
+      type: object
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [ file, directory ]
+          description: Type of the item
+      required:
+        - name
+        - path
+        - type
+
+
