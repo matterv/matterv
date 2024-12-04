@@ -1,13 +1,15 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright Oxide Computer Company
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
  */
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams } from "react-router-dom";
 
-import { Tabs, type TabsRootProps } from '~/ui/lib/Tabs'
+import { Tabs, type TabsRootProps } from "~/ui/lib/Tabs";
 
 /**
  * Use instead of `Tabs.Root` to sync current tab with arg in URL query string.
@@ -16,17 +18,17 @@ import { Tabs, type TabsRootProps } from '~/ui/lib/Tabs'
  * sets of tabs on the same page, use `Tabs.Root` directly.
  */
 export function QueryParamTabs(props: TabsRootProps) {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const value = searchParams.get('tab') || props.defaultValue
+  const [searchParams, setSearchParams] = useSearchParams();
+  const value = searchParams.get("tab") || props.defaultValue;
 
   function onValueChange(newValue: string) {
     if (newValue === props.defaultValue) {
-      searchParams.delete('tab')
+      searchParams.delete("tab");
     } else {
-      searchParams.set('tab', newValue)
+      searchParams.set("tab", newValue);
     }
-    setSearchParams(searchParams, { replace: true })
+    setSearchParams(searchParams, { replace: true });
   }
 
-  return <Tabs.Root {...props} value={value} onValueChange={onValueChange} />
+  return <Tabs.Root {...props} value={value} onValueChange={onValueChange} />;
 }

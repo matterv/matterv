@@ -1,13 +1,15 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright Oxide Computer Company
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
  */
 
-import { BigNum } from '~/ui/lib/BigNum'
-import { percentage, splitDecimal } from '~/util/math'
+import { BigNum } from "~/ui/lib/BigNum";
+import { percentage, splitDecimal } from "~/util/math";
 
 export const CapacityBar = <T extends number | bigint>({
   icon,
@@ -16,20 +18,20 @@ export const CapacityBar = <T extends number | bigint>({
   provisioned,
   capacity,
   capacityLabel,
-  provisionedLabel = 'Provisioned',
+  provisionedLabel = "Provisioned",
   includeUnit = true,
 }: {
-  icon: JSX.Element
-  title: string
-  unit: string
-  provisioned: T
-  capacity: T
-  provisionedLabel?: string
-  capacityLabel: string
-  includeUnit?: boolean
+  icon: JSX.Element;
+  title: string;
+  unit: string;
+  provisioned: T;
+  capacity: T;
+  provisionedLabel?: string;
+  capacityLabel: string;
+  includeUnit?: boolean;
 }) => {
-  const pct = percentage(provisioned, capacity)
-  const unitElt = includeUnit ? <>&nbsp;{unit}</> : null
+  const pct = percentage(provisioned, capacity);
+  const unitElt = includeUnit ? <>&nbsp;{unit}</> : null;
 
   return (
     <div className="w-full min-w-min rounded-lg border border-default lg+:max-w-[50%]">
@@ -41,24 +43,34 @@ export const CapacityBar = <T extends number | bigint>({
         <Bar pct={pct} />
       </div>
       <div className="flex justify-between border-t border-secondary">
-        <ValueCell label={provisionedLabel} value={provisioned} unit={unitElt} />
+        <ValueCell
+          label={provisionedLabel}
+          value={provisioned}
+          unit={unitElt}
+        />
         <ValueCell label={capacityLabel} value={capacity} unit={unitElt} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-type TitleCellProps = { icon: JSX.Element; title: string; unit: string }
+type TitleCellProps = { icon: JSX.Element; title: string; unit: string };
 function TitleCell({ icon, title, unit }: TitleCellProps) {
   return (
     <div>
       <div className="flex grow items-center">
-        <span className="mr-2 flex h-4 w-4 items-center text-accent">{icon}</span>
-        <span className="!normal-case text-mono-sm text-secondary">{title}</span>
-        <span className="ml-1 !normal-case text-mono-sm text-quaternary">({unit})</span>
+        <span className="mr-2 flex h-4 w-4 items-center text-accent">
+          {icon}
+        </span>
+        <span className="!normal-case text-mono-sm text-secondary">
+          {title}
+        </span>
+        <span className="ml-1 !normal-case text-mono-sm text-quaternary">
+          ({unit})
+        </span>
       </div>
     </div>
-  )
+  );
 }
 
 function PctCell({ pct }: { pct: number }) {
@@ -69,16 +81,16 @@ function PctCell({ pct }: { pct: number }) {
         <div className="font-light text-sans-2xl">—</div>
         <div className="text-sans-xl">%</div>
       </div>
-    )
+    );
   }
 
-  const [wholeNumber, decimal] = splitDecimal(pct)
+  const [wholeNumber, decimal] = splitDecimal(pct);
   return (
     <div className="flex -translate-y-0.5 items-baseline">
       <div className="font-light text-sans-2xl">{wholeNumber}</div>
       <div className="text-sans-xl text-quaternary">{decimal}%</div>
     </div>
-  )
+  );
 }
 
 function Bar({ pct }: { pct: number }) {
@@ -90,14 +102,14 @@ function Bar({ pct }: { pct: number }) {
       ></div>
       <div className="h-3 grow rounded-r border bg-info-secondary border-info-secondary"></div>
     </div>
-  )
+  );
 }
 
 type ValueCellProps = {
-  label: string
-  value: number | bigint
-  unit: React.ReactNode
-}
+  label: string;
+  value: number | bigint;
+  unit: React.ReactNode;
+};
 
 function ValueCell({ label, value, unit }: ValueCellProps) {
   return (
@@ -108,5 +120,5 @@ function ValueCell({ label, value, unit }: ValueCellProps) {
         {unit}
       </div>
     </div>
-  )
+  );
 }

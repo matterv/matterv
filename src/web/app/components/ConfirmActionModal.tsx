@@ -1,30 +1,33 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright Oxide Computer Company
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
  */
-import { useState } from 'react'
+import { useState } from "react";
 
-import { type ApiError } from '@oxide/api'
+import { type ApiError } from "@oxide/api";
 
-import { clearConfirmAction, useConfirmAction } from '~/stores/confirm-action'
-import { addToast } from '~/stores/toast'
-import { Modal } from '~/ui/lib/Modal'
+import { clearConfirmAction, useConfirmAction } from "~/stores/confirm-action";
+import { addToast } from "~/stores/toast";
+import { Modal } from "~/ui/lib/Modal";
 
 export function ConfirmActionModal() {
-  const actionConfig = useConfirmAction((state) => state.actionConfig)
+  const actionConfig = useConfirmAction((state) => state.actionConfig);
 
   // this is a bit sad -- ideally we would be able to use the loading state
   // from the mutation directly, but that would require a lot of line changes
   // and would require us to hook this up in a way that re-renders whenever the
   // loading state changes
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  if (!actionConfig) return null
+  if (!actionConfig) return null;
 
-  const { doAction, modalContent, errorTitle, modalTitle, actionType } = actionConfig
+  const { doAction, modalContent, errorTitle, modalTitle, actionType } =
+    actionConfig;
 
   return (
     <Modal isOpen onDismiss={clearConfirmAction} title={modalTitle}>
@@ -32,21 +35,21 @@ export function ConfirmActionModal() {
       <Modal.Footer
         onDismiss={clearConfirmAction}
         onAction={async () => {
-          setLoading(true)
+          setLoading(true);
           try {
-            await doAction()
+            await doAction();
           } catch (error) {
             addToast({
-              variant: 'error',
+              variant: "error",
               title: errorTitle,
               content: (error as ApiError).message,
-            })
+            });
           }
 
-          setLoading(false) // do this regardless of success or error
+          setLoading(false); // do this regardless of success or error
 
           // TODO: generic success toast?
-          clearConfirmAction()
+          clearConfirmAction();
         }}
         cancelText="Cancel"
         actionText="Confirm"
@@ -54,5 +57,5 @@ export function ConfirmActionModal() {
         actionLoading={loading}
       />
     </Modal>
-  )
+  );
 }

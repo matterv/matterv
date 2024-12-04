@@ -1,24 +1,26 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright Oxide Computer Company
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
  */
-import { ErrorBoundary as BaseErrorBoundary } from 'react-error-boundary'
-import { useRouteError } from 'react-router-dom'
+import { ErrorBoundary as BaseErrorBoundary } from "react-error-boundary";
+import { useRouteError } from "react-router-dom";
 
-import { type ApiError } from '~/api/errors'
+import { type ApiError } from "~/api/errors";
 
-import { ErrorPage, NotFound } from './ErrorPage'
+import { ErrorPage, NotFound } from "./ErrorPage";
 
-export const trigger404 = { type: 'error', statusCode: 404 }
+export const trigger404 = { type: "error", statusCode: 404 };
 
-type Props = { error: Error | ApiError }
+type Props = { error: Error | ApiError };
 
 function ErrorFallback({ error }: Props) {
-  if ('statusCode' in error && error.statusCode === 404) {
-    return <NotFound />
+  if ("statusCode" in error && error.statusCode === 404) {
+    return <NotFound />;
   }
 
   return (
@@ -28,15 +30,17 @@ function ErrorFallback({ error }: Props) {
         Please try again. If the problem persists, contact your administrator.
       </p>
     </ErrorPage>
-  )
+  );
 }
 
 export const ErrorBoundary = (props: { children: React.ReactNode }) => (
-  <BaseErrorBoundary FallbackComponent={ErrorFallback}>{props.children}</BaseErrorBoundary>
-)
+  <BaseErrorBoundary FallbackComponent={ErrorFallback}>
+    {props.children}
+  </BaseErrorBoundary>
+);
 
 export function RouterDataErrorBoundary() {
   // TODO: validate this unknown at runtime _before_ passing to ErrorFallback
-  const error = useRouteError() as Props['error']
-  return <ErrorFallback error={error} />
+  const error = useRouteError() as Props["error"];
+  return <ErrorFallback error={error} />;
 }

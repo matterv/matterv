@@ -1,28 +1,30 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright Oxide Computer Company
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
  */
-import cn from 'classnames'
-import { cloneElement } from 'react'
+import cn from "classnames";
+import { cloneElement } from "react";
 
-import { Error12Icon } from '@oxide/design-system/icons/react'
+import { Error12Icon } from "@oxide/design-system/icons/react";
 
-import { Button, type ButtonProps } from '~/ui/lib/Button'
-import { flattenChildren, isOneOf, pluckFirstOfType } from '~/util/children'
-import { classed } from '~/util/classed'
-import { invariant } from '~/util/invariant'
+import { Button, type ButtonProps } from "~/ui/lib/Button";
+import { flattenChildren, isOneOf, pluckFirstOfType } from "~/util/children";
+import { classed } from "~/util/classed";
+import { invariant } from "~/util/invariant";
 
 interface FormActionsProps {
-  formId?: string
-  children: React.ReactNode
+  formId?: string;
+  children: React.ReactNode;
   /** Must be provided with a reason why the submit button is disabled */
-  submitDisabled?: string
-  loading?: boolean
-  error?: { message: string } | null
-  className?: string
+  submitDisabled?: string;
+  loading?: boolean;
+  error?: { message: string } | null;
+  className?: string;
 }
 
 export const Form = {
@@ -40,22 +42,22 @@ export const Form = {
     className,
     loading,
   }: FormActionsProps) => {
-    const childArray = flattenChildren(children)
+    const childArray = flattenChildren(children);
 
     invariant(
       isOneOf(childArray, [Form.Submit, Form.Cancel, Button]),
-      'Form.Actions should only receive Button components as children'
-    )
+      "Form.Actions should only receive Button components as children",
+    );
 
-    const submit = pluckFirstOfType(childArray, Form.Submit)
+    const submit = pluckFirstOfType(childArray, Form.Submit);
 
-    invariant(submit, 'Form.Actions must contain a Form.Submit component')
+    invariant(submit, "Form.Actions must contain a Form.Submit component");
 
     return (
       <div
         className={cn(
-          'flex w-full items-center gap-[0.625rem] children:shrink-0',
-          className
+          "flex w-full items-center gap-[0.625rem] children:shrink-0",
+          className,
         )}
       >
         {cloneElement(submit, {
@@ -72,7 +74,7 @@ export const Form = {
           </div>
         )}
       </div>
-    )
+    );
   },
 
   Submit: (props: ButtonProps) => <Button type="submit" size="sm" {...props} />,
@@ -84,4 +86,4 @@ export const Form = {
   ),
 
   Heading: classed.h2`text-content text-sans-2xl`,
-}
+};

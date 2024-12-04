@@ -1,27 +1,36 @@
-import React, { useMemo } from 'react'
-import { useController, useForm, type Control } from 'react-hook-form'
-import { useNavigate, type NavigateFunction } from 'react-router-dom'
+/*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
+ */
+import React, { useMemo } from "react";
+import { useController, useForm, type Control } from "react-hook-form";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Host, Storage } from '~/api'
-import { ListboxField } from '~/components/form/fields/ListboxField.tsx'
-import { SideModalForm } from '~/components/form/SideModalForm.tsx'
-import { FileListTable } from '~/pages/vm/FileListTable.tsx'
-import { FormDivider } from '~/ui/lib/Divider.tsx'
+import type { Host, Storage } from "~/api";
+import { ListboxField } from "~/components/form/fields/ListboxField.tsx";
+import { SideModalForm } from "~/components/form/SideModalForm.tsx";
+import { FileListTable } from "~/pages/vm/FileListTable.tsx";
+import { FormDivider } from "~/ui/lib/Divider.tsx";
 
 const StorageSourceField = ({
   control,
   storages,
 }: {
-  control: Control<IsoSelectionProps>
-  storages: Storage[]
+  control: Control<IsoSelectionProps>;
+  storages: Storage[];
 }) => {
   const {
     field: { onChange },
-  } = useController({ control, name: 'storageId' })
+  } = useController({ control, name: "storageId" });
   const storageItems = storages.map((storage) => ({
     label: storage.name,
     value: storage.id,
-  }))
+  }));
 
   return (
     <>
@@ -35,34 +44,38 @@ const StorageSourceField = ({
           items={storageItems}
           required
           onChange={(id) => {
-            onChange(id)
+            onChange(id);
           }}
         />
       </div>
     </>
-  )
-}
+  );
+};
 
 export type IsoSelectionProps = {
-  storageId: string
-  isoPath: string
-}
+  storageId: string;
+  isoPath: string;
+};
 type IsoSelectionFormProps = {
-  onSubmit: (props: IsoSelectionProps) => void
-  onDismiss: (navigate: NavigateFunction) => void
-  host: Host
-}
-export function IsoSelectionForm({ onDismiss, onSubmit, host }: IsoSelectionFormProps) {
-  const storages = useMemo(() => host.vmStorages || [], [host.vmStorages])
+  onSubmit: (props: IsoSelectionProps) => void;
+  onDismiss: (navigate: NavigateFunction) => void;
+  host: Host;
+};
+export function IsoSelectionForm({
+  onDismiss,
+  onSubmit,
+  host,
+}: IsoSelectionFormProps) {
+  const storages = useMemo(() => host.vmStorages || [], [host.vmStorages]);
   const defaultValues: IsoSelectionProps = {
     storageId: storages[0].id,
-    isoPath: '',
-  }
-  const navigate = useNavigate()
+    isoPath: "",
+  };
+  const navigate = useNavigate();
 
-  const form = useForm({ defaultValues })
-  const selectedFile = form.watch('isoPath')
-  const selectedStorageId = form.watch('storageId')
+  const form = useForm({ defaultValues });
+  const selectedFile = form.watch("isoPath");
+  const selectedStorageId = form.watch("storageId");
   return (
     <SideModalForm
       form={form}
@@ -71,14 +84,14 @@ export function IsoSelectionForm({ onDismiss, onSubmit, host }: IsoSelectionForm
       resourceName="disk"
       onDismiss={() => onDismiss(navigate)}
       onSubmit={() => {
-        onSubmit(form.getValues())
+        onSubmit(form.getValues());
       }}
       submitError={null}
-      disableSubmitBtn={selectedFile === ''}
+      disableSubmitBtn={selectedFile === ""}
     >
       <StorageSourceField control={form.control} storages={storages} />
       <FileListTable storageId={selectedStorageId} control={form.control} />
       <FormDivider />
     </SideModalForm>
-  )
+  );
 }

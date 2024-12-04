@@ -1,3 +1,13 @@
+/*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
+ */
+
 // RFB holds the API to connect and communicate with a VNC server
 import RFB from '@novnc/novnc/lib/rfb.js'
 import { initLogging } from '@novnc/novnc/lib/util/logging.js'

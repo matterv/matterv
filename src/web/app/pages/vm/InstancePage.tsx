@@ -1,79 +1,94 @@
 /*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
+ */
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
  * Copyright Oxide Computer Company
  */
-import { filesize } from 'filesize'
-import { useMemo } from 'react'
-import { type LoaderFunctionArgs } from 'react-router-dom'
+import { filesize } from "filesize";
+import { useMemo } from "react";
+import { type LoaderFunctionArgs } from "react-router-dom";
 
-import {apiQueryClient, Host, usePrefetchedApiQuery} from '@oxide/api'
-import { Instances24Icon } from '@oxide/design-system/icons/react'
+import { apiQueryClient, Host, usePrefetchedApiQuery } from "@oxide/api";
+import { Instances24Icon } from "@oxide/design-system/icons/react";
 
-import { instanceTransitioning } from '~/api/util'
-import { MoreActionsMenu } from '~/components/MoreActionsMenu'
-import { RefreshButton } from '~/components/RefreshButton'
-import { RouteTabs, Tab } from '~/components/RouteTabs.tsx'
-import { InstanceStateBadge } from '~/components/StateBadge'
-import { getInstanceSelector, useInstanceSelector } from '~/hooks/use-params'
-import { PageHeader, PageTitle } from '~/ui/lib/PageHeader'
-import { PropertiesTable } from '~/ui/lib/PropertiesTable'
-import { Spinner } from '~/ui/lib/Spinner'
-import { Tooltip } from '~/ui/lib/Tooltip'
-import { ALL_ISH } from '~/util/consts.ts'
-import { pb } from '~/util/path-builder'
+import { instanceTransitioning } from "~/api/util";
+import { MoreActionsMenu } from "~/components/MoreActionsMenu";
+import { RefreshButton } from "~/components/RefreshButton";
+import { RouteTabs, Tab } from "~/components/RouteTabs.tsx";
+import { InstanceStateBadge } from "~/components/StateBadge";
+import { getInstanceSelector, useInstanceSelector } from "~/hooks/use-params";
+import { PageHeader, PageTitle } from "~/ui/lib/PageHeader";
+import { PropertiesTable } from "~/ui/lib/PropertiesTable";
+import { Spinner } from "~/ui/lib/Spinner";
+import { Tooltip } from "~/ui/lib/Tooltip";
+import { ALL_ISH } from "~/util/consts.ts";
+import { pb } from "~/util/path-builder";
 
-import { useMakeInstanceActions } from './actions'
+import { useMakeInstanceActions } from "./actions";
 
 // this is meant to cover everything that we fetch in the page
 async function refreshData() {
-  await Promise.all([apiQueryClient.invalidateQueries('getVm')])
+  await Promise.all([apiQueryClient.invalidateQueries("getVm")]);
 }
 
 InstancePage.loader = async ({ params }: LoaderFunctionArgs) => {
-  const { vmId } = getInstanceSelector(params)
+  const { vmId } = getInstanceSelector(params);
   await Promise.all([
-    apiQueryClient.prefetchQuery('getVm', {
+    apiQueryClient.prefetchQuery("getVm", {
       path: { vmId },
     }),
-    apiQueryClient.prefetchQuery('getHosts', { query: { limit: ALL_ISH } }),
-  ])
-  return null
-}
+    apiQueryClient.prefetchQuery("getHosts", { query: { limit: ALL_ISH } }),
+  ]);
+  return null;
+};
 
-const POLL_INTERVAL = 1000
+const POLL_INTERVAL = 1000;
 
 export function InstancePage() {
-  const instanceSelector = useInstanceSelector()
+  const instanceSelector = useInstanceSelector();
 
-
-
-  const { data: hosts } = usePrefetchedApiQuery('getHosts', { query: { limit: ALL_ISH } })
+  const { data: hosts } = usePrefetchedApiQuery("getHosts", {
+    query: { limit: ALL_ISH },
+  });
 
   const { data: instance } = usePrefetchedApiQuery(
-    'getVm',
+    "getVm",
     {
       path: { vmId: instanceSelector.vmId },
     },
     {
       refetchInterval: ({ state: { data: instance } }) =>
         instance && instanceTransitioning(instance) ? POLL_INTERVAL : false,
-    }
-  )
+    },
+  );
 
-  const polling = instanceTransitioning(instance)
+  const polling = instanceTransitioning(instance);
 
-  const vmHost = useMemo(() => hosts.items.find((h) => h.id === instance.hostId), [hosts, instance])
+  const vmHost = useMemo(
+    () => hosts.items.find((h) => h.id === instance.hostId),
+    [hosts, instance],
+  );
 
   const makeActions = useMakeInstanceActions({
     onSuccess: refreshData,
     host: vmHost as Host,
-  })
-  const actions = useMemo(() => [...makeActions(instance)], [instance, makeActions])
+  });
+  const actions = useMemo(
+    () => [...makeActions(instance)],
+    [instance, makeActions],
+  );
 
-  const memory = filesize(instance.memory, { output: 'object', base: 2 })
+  const memory = filesize(instance.memory, { output: "object", base: 2 });
 
   return (
     <>
@@ -98,7 +113,10 @@ export function InstancePage() {
             <div className="flex">
               <InstanceStateBadge state={instance.status} />
               {polling && (
-                <Tooltip content="Auto-refreshing while state changes" delay={150}>
+                <Tooltip
+                  content="Auto-refreshing while state changes"
+                  delay={150}
+                >
                   <button type="button">
                     <Spinner className="ml-2" />
                   </button>
@@ -113,7 +131,7 @@ export function InstancePage() {
           </PropertiesTable.Row>
           <PropertiesTable.Row label="ip">
             <span className="overflow-hidden text-ellipsis whitespace-nowrap text-secondary">
-              {instance.ipAddresses?.map((ip) => ip.ip).join(', ')}
+              {instance.ipAddresses?.map((ip) => ip.ip).join(", ")}
             </span>
           </PropertiesTable.Row>
           <PropertiesTable.Row label="host">
@@ -127,5 +145,5 @@ export function InstancePage() {
         <Tab to={pb.instanceStorage(instanceSelector.vmId)}>Storage</Tab>
       </RouteTabs>
     </>
-  )
+  );
 }

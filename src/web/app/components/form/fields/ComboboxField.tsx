@@ -1,9 +1,11 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, you can obtain one at https://mozilla.org/MPL/2.0/.
  *
- * Copyright Oxide Computer Company
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
  */
 
 import {
@@ -11,21 +13,21 @@ import {
   type Control,
   type FieldPath,
   type FieldValues,
-} from 'react-hook-form'
+} from "react-hook-form";
 
-import { Combobox, type ComboboxBaseProps } from '~/ui/lib/Combobox'
-import { capitalize } from '~/util/str'
+import { Combobox, type ComboboxBaseProps } from "~/ui/lib/Combobox";
+import { capitalize } from "~/util/str";
 
-import { ErrorMessage } from './ErrorMessage'
+import { ErrorMessage } from "./ErrorMessage";
 
 export type ComboboxFieldProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
 > = {
-  name: TName
-  control: Control<TFieldValues>
-  onChange?: (value: string | null | undefined) => void
-} & ComboboxBaseProps
+  name: TName;
+  control: Control<TFieldValues>;
+  onChange?: (value: string | null | undefined) => void;
+} & ComboboxBaseProps;
 
 export function ComboboxField<
   TFieldValues extends FieldValues,
@@ -49,11 +51,15 @@ export function ComboboxField<
   description = placeholder
     ? undefined
     : allowArbitraryValues
-      ? 'Select an option or enter a custom value'
-      : 'Select an option',
+      ? "Select an option or enter a custom value"
+      : "Select an option",
   ...props
 }: ComboboxFieldProps<TFieldValues, TName>) {
-  const { field, fieldState } = useController({ name, control, rules: { required } })
+  const { field, fieldState } = useController({
+    name,
+    control,
+    rules: { required },
+  });
   return (
     <div className="max-w-lg">
       <Combobox
@@ -64,13 +70,13 @@ export function ComboboxField<
         selected={field.value || null}
         hasError={fieldState.error !== undefined}
         onChange={(value) => {
-          field.onChange(value)
-          onChange?.(value)
+          field.onChange(value);
+          onChange?.(value);
         }}
         allowArbitraryValues={allowArbitraryValues}
         {...props}
       />
       <ErrorMessage error={fieldState.error} label={label} />
     </div>
-  )
+  );
 }
