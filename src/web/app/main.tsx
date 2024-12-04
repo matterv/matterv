@@ -5,34 +5,33 @@
  *
  * Copyright Oxide Computer Company
  */
-import { QueryClientProvider } from '@tanstack/react-query'
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createHashRouter, RouterProvider } from 'react-router-dom'
+import { QueryClientProvider } from "@tanstack/react-query";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 
-import { queryClient } from '@oxide/api'
+import { queryClient } from "@oxide/api";
 
-import { ConfirmActionModal } from './components/ConfirmActionModal'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { ReduceMotion } from './hooks/use-reduce-motion'
+import { ConfirmActionModal } from "./components/ConfirmActionModal";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ReduceMotion } from "./hooks/use-reduce-motion";
 // stripped out by rollup in production
-import { startMockAPI } from './msw-mock-api'
-import { routes } from './routes'
+import { startMockAPI } from "./msw-mock-api";
+import { routes } from "./routes";
 // this is the only allowed css import
 // eslint-disable-next-line no-restricted-imports
-import '~/ui/styles/index.css'
+import "~/ui/styles/index.css";
 
-import { SkipLink } from '~/ui/lib/SkipLink'
+import { SkipLink } from "~/ui/lib/SkipLink";
 
 if (process.env.SHA) {
   console.info(
-    'Oxide Web Console version',
-    `https://github.com/oxidecomputer/console/commits/${process.env.SHA}`
-  )
+    "Oxide Web Console version",
+    `https://github.com/oxidecomputer/console/commits/${process.env.SHA}`,
+  );
 }
 
-const root = createRoot(document.getElementById('root')!)
+const root = createRoot(document.getElementById("root")!);
 
 function render() {
   // createBrowserRouter kicks off the loaders, which is weird because you'd
@@ -49,7 +48,7 @@ function render() {
       v7_relativeSplatPath: true,
       v7_skipActionErrorRevalidation: true,
     },
-  })
+  });
 
   root.render(
     <StrictMode>
@@ -68,14 +67,14 @@ function render() {
         </ErrorBoundary>
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
-    </StrictMode>
-  )
+    </StrictMode>,
+  );
 }
 
 if (process.env.MSW) {
   // MSW has NODE_ENV !== prod built into it, but let's be extra safe
   // need to defer requests until after the mock server starts up
-  startMockAPI().then(render)
+  startMockAPI().then(render);
 } else {
-  render()
+  render();
 }
