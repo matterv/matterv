@@ -9,7 +9,6 @@ set -o errexit # exit if anything fails
 set -o pipefail
 set -o xtrace
 
-OMICRON_SHA=$(head -n 1 OMICRON_VERSION)
 GEN_DIR="$PWD/app/api/__generated__"
 
 SPEC_URL="./merged.yaml"

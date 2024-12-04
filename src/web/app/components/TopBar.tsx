@@ -5,24 +5,26 @@
  *
  * Copyright Oxide Computer Company
  */
-import cn from 'classnames'
-import React from 'react'
+import cn from "classnames";
+import React from "react";
 
-import { DirectionDownIcon, Profile16Icon } from '@oxide/design-system/icons/react'
+import {
+  DirectionDownIcon,
+  Profile16Icon,
+} from "@oxide/design-system/icons/react";
 
-import { buttonStyle } from '~/ui/lib/Button'
-import * as DropdownMenu from '~/ui/lib/DropdownMenu'
-import {apiQueryClient, navToLogin, useApiMutation, useApiQueries, usePrefetchedApiQuery} from "~/api";
+import { buttonStyle } from "~/ui/lib/Button";
+import * as DropdownMenu from "~/ui/lib/DropdownMenu";
+import { navToLogin, useApiMutation, usePrefetchedApiQuery } from "~/api";
 
 export function TopBar({ children }: { children: React.ReactNode }) {
-  const logout = useApiMutation('logout', {
+  const logout = useApiMutation("logout", {
     onSuccess: () => navToLogin({ includeCurrent: false }),
-  })
-  const {data: user} = usePrefetchedApiQuery("getUser", {})
+  });
+  const { data: user } = usePrefetchedApiQuery("getUser", {});
   // toArray filters out nulls, which is essential because the silo/system
   // picker is going to come in null when the user isn't supposed to see it
-  const [cornerPicker, ...otherPickers] = React.Children.toArray(children)
-
+  const [cornerPicker, ...otherPickers] = React.Children.toArray(children);
 
   // The height of this component is governed by the `PageContainer`
   // It's important that this component returns two distinct elements (wrapped in a fragment).
@@ -41,22 +43,30 @@ export function TopBar({ children }: { children: React.ReactNode }) {
             <DropdownMenu.Root>
               <DropdownMenu.Trigger
                 className={cn(
-                  buttonStyle({ size: 'sm', variant: 'secondary' }),
-                  'flex items-center gap-2'
+                  buttonStyle({ size: "sm", variant: "secondary" }),
+                  "flex items-center gap-2",
                 )}
                 aria-label="User menu"
               >
                 <Profile16Icon className="text-quaternary" />
-                <span className="normal-case text-sans-md text-secondary">{user.name}</span>
+                <span className="normal-case text-sans-md text-secondary">
+                  {user.name}
+                </span>
                 <DirectionDownIcon className="!w-2.5" />
               </DropdownMenu.Trigger>
               <DropdownMenu.Content gap={8} className="!z-topBarPopover">
-                <DropdownMenu.Item onSelect={() => {logout.mutate({})}}>Sign out</DropdownMenu.Item>
+                <DropdownMenu.Item
+                  onSelect={() => {
+                    logout.mutate({});
+                  }}
+                >
+                  Sign out
+                </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }

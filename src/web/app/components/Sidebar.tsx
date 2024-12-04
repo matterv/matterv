@@ -5,17 +5,16 @@
  *
  * Copyright Oxide Computer Company
  */
-import cn from 'classnames'
-import { NavLink, useLocation } from 'react-router-dom'
+import cn from "classnames";
+import { NavLink, useLocation } from "react-router-dom";
 
-import { Action16Icon, Document16Icon } from '@oxide/design-system/icons/react'
+import { Action16Icon, Document16Icon } from "@oxide/design-system/icons/react";
 
-import { openQuickActions } from '~/hooks/use-quick-actions'
-import { Button } from '~/ui/lib/Button'
-import { Truncate } from '~/ui/lib/Truncate'
+import { openQuickActions } from "~/hooks/use-quick-actions";
+import { Button } from "~/ui/lib/Button";
 
 const linkStyles =
-  'flex h-7 items-center rounded px-2 text-sans-md hover:bg-hover [&>svg]:mr-2 [&>svg]:text-quinary text-secondary'
+  "flex h-7 items-center rounded px-2 text-sans-md hover:bg-hover [&>svg]:mr-2 [&>svg]:text-quinary text-secondary";
 
 // TODO: this probably doesn't go to the docs root. maybe it even opens a
 // menu with links to several relevant docs for the page
@@ -30,11 +29,11 @@ export const DocsLinkItem = () => (
       <Document16Icon /> Docs
     </a>
   </li>
-)
+);
 
 // this is mousetrap's logic for the `mod` modifier shortcut
 // https://github.com/ccampbell/mousetrap/blob/2f9a476b/mousetrap.js#L135
-const modKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? 'cmd' : 'ctrl'
+const modKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? "cmd" : "ctrl";
 
 const JumpToButton = () => {
   return (
@@ -51,20 +50,20 @@ const JumpToButton = () => {
       </span>
       <div className="text-mono-xs">{modKey}+K</div>
     </Button>
-  )
-}
+  );
+};
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col border-r text-sans-md text-default border-secondary">
       {children}
     </div>
-  )
+  );
 }
 
 interface SidebarNav {
-  children: React.ReactNode
-  heading?: string
+  children: React.ReactNode;
+  heading?: string;
 }
 
 Sidebar.Nav = ({ children, heading }: SidebarNav) => (
@@ -73,25 +72,27 @@ Sidebar.Nav = ({ children, heading }: SidebarNav) => (
       <ul className="space-y-0.5">{children}</ul>
     </nav>
   </div>
-)
+);
 
 export const NavLinkItem = (props: {
-  to: string
-  children: React.ReactNode
-  end?: boolean
-  disabled?: boolean
+  to: string;
+  children: React.ReactNode;
+  end?: boolean;
+  disabled?: boolean;
 }) => {
   // If the current page is the create form for this NavLinkItem's resource, highlight the NavLink in the sidebar
-  const currentPathIsCreateForm = useLocation().pathname.startsWith(`${props.to}-new`)
+  const currentPathIsCreateForm = useLocation().pathname.startsWith(
+    `${props.to}-new`,
+  );
   return (
     <li>
       <NavLink
         to={props.to}
         className={({ isActive }) =>
           cn(linkStyles, {
-            'text-accent !bg-accent-secondary hover:!bg-accent-secondary-hover [&>svg]:!text-accent-tertiary':
+            "text-accent !bg-accent-secondary hover:!bg-accent-secondary-hover [&>svg]:!text-accent-tertiary":
               isActive || currentPathIsCreateForm,
-            'pointer-events-none text-disabled': props.disabled,
+            "pointer-events-none text-disabled": props.disabled,
           })
         }
         end={props.end}
@@ -99,5 +100,5 @@ export const NavLinkItem = (props: {
         {props.children}
       </NavLink>
     </li>
-  )
-}
+  );
+};
