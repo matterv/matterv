@@ -5,23 +5,20 @@
  *
  * Copyright Oxide Computer Company
  */
-import { Outlet } from 'react-router-dom'
-
-import heroRackImg from '~/assets/oxide-hero-rack.webp'
-import { OxideLogo } from '~/components/OxideLogo'
+import { Outlet } from "react-router-dom";
 
 export function LoginLayout() {
   return (
-      <main
-          className="relative h-screen"
-          style={{
-              background:
-                  'radial-gradient(200% 100% at 50% 100%, var(--surface-default) 0%, #161B1D 100%)',
-          }}
-      >
-          <div className="z-10 flex h-full items-center justify-center">
-              <Outlet/>
-          </div>
-      </main>
-  )
+    <main
+      className="relative h-screen"
+      style={{
+        background:
+          "radial-gradient(200% 100% at 50% 100%, var(--surface-default) 0%, #161B1D 100%)",
+      }}
+    >
+      <div className="z-10 flex h-full items-center justify-center">
+        <Outlet />
+      </div>
+    </main>
+  );
 }

@@ -57,6 +57,7 @@ const baseDefaultValues: CreateVirtualMachineOnHostRequest = {
   disks: [],
   networks: [],
   hostId: '',
+  osInfo: {osType: 'Windows'}
 }
 
 CreateVm.loader = async () => {
