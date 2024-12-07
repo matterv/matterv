@@ -21,7 +21,7 @@ refresh_install() {
   echo "Refresh install"
   mkdir -p /opt/matterv
   mkdir -p /var/log/matterv-cluster
-  tar -xzf $BINARY -C /opt/matterv
+  tar -xf $BINARY -C /opt/matterv
   ln -s /opt/matterv/$BINARY_NAME /opt/matterv/cluster
   cp /opt/matterv/cluster/matterv-cluster.service /etc/systemd/system/
   chmod 644 /etc/systemd/system/matterv-cluster.service
@@ -36,7 +36,7 @@ refresh_install() {
 upgrade() {
   echo "Upgrade"
   systemctl stop matterv-cluster
-  tar -xzf $BINARY -C /opt/matterv
+  tar -xf $BINARY -C /opt/matterv
   cp /opt/matterv/cluster/db/data.db /opt/matterv/$BINARY_NAME/db/
   ln -sfn /opt/matterv/$BINARY_NAME /opt/matterv/cluster
   java -jar /opt/matterv/cluster/cluster.jar db migrate /opt/matterv/cluster/app.yaml &> /dev/null
@@ -55,7 +55,7 @@ install() {
 if [ -n "$LOCAL_BINARY" ]; then
   echo "install from $LOCAL_BINARY"
   BINARY=$LOCAL_BINARY
-  BINARY_NAME=$(basename $LOCAL_BINARY .tar.gz)
+  BINARY_NAME=$(basename $LOCAL_BINARY .tar.xz)
   install
 fi
 

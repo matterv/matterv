@@ -22,7 +22,7 @@ refresh_install() {
   mkdir -p /opt/matterv
   mkdir -p /var/log/matterv-host
   mkdir -p /var/run/matterv-host/vms
-  tar -xzf $BINARY -C /opt/matterv
+  tar -xf $BINARY -C /opt/matterv
   ln -s /opt/matterv/$BINARY_NAME /opt/matterv/host
   cp /opt/matterv/host/matterv-host.service /etc/systemd/system/
   chmod 644 /etc/systemd/system/matterv-host.service
@@ -38,7 +38,7 @@ refresh_install() {
 upgrade() {
   echo "Upgrade"
   systemctl stop matterv-host
-  tar -xzf $BINARY -C /opt/matterv
+  tar -xf $BINARY -C /opt/matterv
   cp /opt/matterv/host/db/data.db /opt/matterv/$BINARY_NAME/db/
   ln -sfn /opt/matterv/$BINARY_NAME /opt/matterv/host
   java -jar /opt/matterv/host/host.jar db migrate /opt/matterv/host/app.yaml &> /dev/null
@@ -61,7 +61,7 @@ install_from_network() {
 if [ -n "$LOCAL_BINARY" ]; then
   echo "install from $LOCAL_BINARY"
   BINARY=$LOCAL_BINARY
-  BINARY_NAME=$(basename $LOCAL_BINARY .tar.gz)
+  BINARY_NAME=$(basename $LOCAL_BINARY .tar.xz)
   install
 else
   install_from_network

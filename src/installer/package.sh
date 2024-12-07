@@ -91,8 +91,8 @@ fi
 
 package_src
 
-rm -rf $TARGET_DIR/matterv-*$VERSION.tar.gz
+rm -rf $TARGET_DIR/matterv-*$VERSION.tar.xz
 
-tar -czf $TARGET_DIR/matterv-cluster-$VERSION.tar.gz -C $TARGET_DIR matterv-cluster-$VERSION
-tar -czf $TARGET_DIR/matterv-host-$VERSION.tar.gz -C $TARGET_DIR matterv-host-$VERSION
+tar -cJf $TARGET_DIR/matterv-cluster-$VERSION.tar.xz -C $TARGET_DIR matterv-cluster-$VERSION
+tar -cJf $TARGET_DIR/matterv-host-$VERSION.tar.xz -C $TARGET_DIR matterv-host-$VERSION
 rm -rf $TARGET_DIR/matterv*/
