@@ -29,21 +29,31 @@ MatterV Host currently supports a simple network model called "Basic Network":
 Before configuring the basic network, you need to identify which physical network interface will be used.
 
 <Steps>
-  1. List available network interfaces using `ifconfig`
+  1. List available network interfaces using `ip`
   2. Review the output to identify available interfaces
   3. Choose one physical interface for the basic network
   4. Note the chosen interface name (e.g., ens192)
 </Steps>
 
-Example `ifconfig` output:
+Example `ip addr` output:
 ```bash
-ens192: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255
-        ...
+[root@localhost ~]# ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens192: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 00:0c:29:1d:32:58 brd ff:ff:ff:ff:ff:ff
+    altname enp11s0
+    inet 192.168.1.116/24 brd 192.168.1.255 scope global dynamic noprefixroute ens192
+       valid_lft 85300sec preferred_lft 85300sec
+    inet6 2600:1700:38ce:c020:20c:29ff:fe1d:3258/64 scope global dynamic noprefixroute
+       valid_lft 3488sec preferred_lft 3488sec
+    inet6 fe80::20c:29ff:fe1d:3258/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
 
-ens256: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 192.168.2.101  netmask 255.255.255.0  broadcast 192.168.2.255
-        ...
 ```
 
 :::caution[Network Selection]
@@ -54,12 +64,12 @@ If your host has multiple NICs, you can only use one for the basic network. Choo
 
 Once you've identified the physical network interface, follow these steps to create the basic network:
 
-<Steps>
-  1. Navigate to the MatterV Host installation directory: `cd /opt/matterv/host/`
-  2. Run the setup script with your chosen network interface: `sudo bash ./setup_bridge.sh ens192`
-  3. Wait for the script to complete (network will be interrupted briefly)
-  4. Verify the bridge creation: `ip link show virbr0`
-</Steps>
+- Run the setup script with your chosen network interface:
+```bash
+sudo bash /opt/matterv/host/scripts/setup_bridge.sh -b virbr0 -p ens192
+```
+- Wait for the script to complete (network will be interrupted briefly)
+- Verify the bridge creation: `ip link show virbr0`
 
 :::danger[Network Interruption]
 Running the setup script will temporarily interrupt the network connection on the specified interface for a few seconds. Plan accordingly and ensure you have alternative access if needed.
@@ -72,12 +82,3 @@ When the setup is complete:
 - The physical interface will be added to the bridge
 - VMs can now be configured to use this network
 - The host's original IP address will be moved to the bridge interface
-
-## Verification Steps
-
-<Steps>
-  1. Check bridge status: `brctl show virbr0`
-  2. Verify network connectivity on the host
-  3. Check bridge interface status: `ip addr show virbr0`
-  4. Verify physical interface is attached to bridge: `brctl show`
-</Steps>
