@@ -10,7 +10,7 @@ The network installation method is the simplest way to install MatterV Host. It 
 * Run the installation command:
 
 ```shell
-curl -fsSL https://www.matterv.com/release/matterv-cluster/latest | sudo bash -
+curl -fsSL https://github.com/matterv/matterv/releases/download/v0.6.0/install-matterv-cluster.sh | sudo bash -
 ```
 
 * Wait for the installation to complete. The installer will:
@@ -47,14 +47,14 @@ systemctl status matterv-cluster
   ```
 The output should show that the service is "active (running)". For example:
 ```text
-matterv-cluster.service - MatterV Cluster Service
-     Loaded: loaded (/etc/systemd/system/matterv-cluster.service; enabled; vendor preset: disabled)
-     Active: active (running) since Thu 2024-11-29 10:30:15 UTC; 2min ago
-   Main PID: 12345 (matterv-cluster)
-      Tasks: 20
-     Memory: 234.5M
-        CPU: 1.234s
+matterv-cluster.service - Matterv Cluster Service
+     Loaded: loaded (/etc/systemd/system/matterv-cluster.service; enabled; preset: disabled)
+     Active: active (running) since Sat 2024-12-07 12:47:13 PST; 11s ago
+   Main PID: 13583 (java)
+      Tasks: 48 (limit: 48891)
+     Memory: 197.6M
+        CPU: 6.848s
      CGroup: /system.slice/matterv-cluster.service
-             └─12345 /usr/bin/matterv-cluster
+             └─13583 /usr/bin/java -jar /opt/matterv/cluster/cluster.jar server /opt/matterv/cluster/app.yaml
   ```
 

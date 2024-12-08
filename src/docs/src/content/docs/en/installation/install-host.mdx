@@ -10,7 +10,7 @@ The network installation method is the simplest way to install MatterV Host. It 
 * Run the installation command:
 
 ```shell
-curl -fsSL https://www.matterv.com/release/matterv-host/latest | sudo bash -
+curl -fsSL https://github.com/matterv/matterv/releases/download/v0.6.0/install-matterv-host.sh | sudo bash -
 ```
 
 * Wait for the installation to complete. The installer will:
@@ -40,21 +40,21 @@ Use this method when the server doesn't have internet access or when you need to
   bash ./installer -l matterv-0.6.tgz
   ```
 
-* Verifying the Installation
+## Verifying the Installation
 After installation is complete, verify that MatterV Host is running properly:
   ```shell
   systemctl status matterv-host
   ```
   The output should show that the service is "active (running)". For example:
   ```text
-  matterv-host.service - MatterV Host Service
-       Loaded: loaded (/etc/systemd/system/matterv-host.service; enabled; vendor preset: disabled)
-       Active: active (running) since Thu 2024-11-29 10:30:15 UTC; 2min ago
-     Main PID: 12345 (matterv-host)
-        Tasks: 20
-       Memory: 234.5M
-          CPU: 1.234s
-       CGroup: /system.slice/matterv-host.service
-               └─12345 /usr/bin/matterv-host
+  matterv-host.service - Matterv Host Service
+     Loaded: loaded (/etc/systemd/system/matterv-host.service; enabled; preset: disabled)
+     Active: active (running) since Sat 2024-12-07 12:41:48 PST; 9min ago
+   Main PID: 13359 (java)
+      Tasks: 50 (limit: 48891)
+     Memory: 235.8M
+        CPU: 8.067s
+     CGroup: /system.slice/matterv-host.service
+             └─13359 /usr/bin/java -jar /opt/matterv/host/host.jar server /opt/matterv/host/app.yaml
   ```
 
