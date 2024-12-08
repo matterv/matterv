@@ -1,0 +1,60 @@
+---
+title: Installing MatterV Host
+description: How to install MatterV Host.
+---
+
+This guide provides step-by-step instructions for installing MatterV Host. There are two installation methods available: network installation and offline installation.
+
+## Network Installation (Recommended)
+The network installation method is the simplest way to install MatterV Host. It automatically downloads and installs the latest version.
+* Run the installation command:
+
+```shell
+curl -fsSL https://www.matterv.com/release/matterv-host/latest | sudo bash -
+```
+
+* Wait for the installation to complete. The installer will:
+  * Download the latest MatterV Host package
+  * Install required dependencies
+  * Configure system settings
+  * Start the MatterV Host service
+
+## Offline Installation
+Use this method when the server doesn't have internet access or when you need to install a specific version.
+
+* Download the installation package:
+  * On a machine with internet access, visit: [MatterV Host Release](https://www.matterv.com/release/matterv-host/latest)
+  * Download the MatterV Host package (example: matterv-host-0.6.tgz)
+
+* Transfer the package:
+
+  * Copy the downloaded package to your MatterV Host server
+  * Ensure you have sufficient permissions in the destination directory
+
+* Install MatterV Host:
+  ```shell
+  # Extract the package
+  tar xzf matterv-0.6.tgz
+
+  # Run the installer
+  bash ./installer -l matterv-0.6.tgz
+  ```
+
+* Verifying the Installation
+After installation is complete, verify that MatterV Host is running properly:
+  ```shell
+  systemctl status matterv-host
+  ```
+  The output should show that the service is "active (running)". For example:
+  ```text
+  matterv-host.service - MatterV Host Service
+       Loaded: loaded (/etc/systemd/system/matterv-host.service; enabled; vendor preset: disabled)
+       Active: active (running) since Thu 2024-11-29 10:30:15 UTC; 2min ago
+     Main PID: 12345 (matterv-host)
+        Tasks: 20
+       Memory: 234.5M
+          CPU: 1.234s
+       CGroup: /system.slice/matterv-host.service
+               └─12345 /usr/bin/matterv-host
+  ```
+

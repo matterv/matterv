@@ -1,0 +1,24 @@
+/*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *  *
+ *  * Copyright Loma Technology LLC
+ *
+ */
+
+.ox-side-modal {
+  --content-gutter: 2rem;
+}
+
+.ox-side-modal > :not(.body, button, footer),
+.ox-side-modal > .body > * {
+  margin-left: var(--content-gutter);
+  margin-right: var(--content-gutter);
+}
+
+.ox-side-modal > footer {
+  padding-left: var(--content-gutter);
+  padding-right: var(--content-gutter);
+}

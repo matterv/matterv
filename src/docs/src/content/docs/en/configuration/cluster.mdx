@@ -1,0 +1,76 @@
+---
+title: MatterV Cluster Configuration
+description: Configure MatterV Cluster and add your first host
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+# Configuring MatterV Cluster
+
+After installing MatterV Cluster, follow these steps to configure it and add your first host.
+
+## Accessing the Admin Console
+
+<Steps>
+  1. Open your web browser and navigate to `https://your-matterv-cluster-ip-or-hostname:8543`
+  2. Enter username: `admin`
+  3. Enter password: `password`
+  4. Click Sign In
+</Steps>
+<img src="/matterv-login.gif" alt="Login Process" />
+
+
+
+## Adding a Host
+
+<Steps>
+  1. Navigate to the "Hosts" page in the left sidebar
+  2. Click the "Add Host" button
+  3. Enter the host address (IP or hostname)
+  4. Verify port is set to 8443 (default)
+  5. Click "Ok" to connect the host
+</Steps>
+<img src="/matterv-add-host.gif" alt="Add Host" />
+
+
+
+## Configuring Host Storage
+
+<Steps>
+  1. Go to the host details page
+  2. Click the "Add a Storage" button
+  3. Enter the path to your data directory (e.g., `/mnt`)
+  4. Click "Add" to create the storage
+</Steps>
+
+:::caution[Storage Location]
+Ensure the storage path is located on the data partition and has sufficient free space for VM images.
+:::
+
+<img src="/matterv-add-storage.gif" alt="Add Storage" />
+
+
+## Configuring Network
+
+<Steps>
+  1. On the host details page, click "Add A Network"
+  2. Select `virbr0` from the network interface list
+  3. Click "Add" to enable the network
+</Steps>
+<img src="/matterv-add-network.gif" alt="Add Network" />
+
+## Uploading ISO Images
+
+<Steps>
+  1. Navigate to the "Storage" page
+  2. Click "Create Directory" and name it `iso`
+  3. Click on the newly created `iso` directory
+  4. Click "Upload File" and select an ISO image
+  5. Wait for the upload to complete (do not refresh the page)
+</Steps>
+
+:::tip[Upload Information]
+The upload time depends on your file size and network speed. Large ISO files may take several minutes to complete.
+:::
+
+<img src="/matterv-upload-iso.gif" alt="Upload Iso" />

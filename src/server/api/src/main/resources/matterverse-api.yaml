@@ -1,0 +1,683 @@
+openapi: 3.0.3
+info:
+  title: MatterVerse API
+  description: API definition for MatterVerse
+  version: 1.0.0
+
+
+servers:
+  - url: /api
+paths:
+  /v1/user:
+    get:
+      tags:
+        - auth
+      summary: Get user info
+      operationId: getUser
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /v1/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JSESSIONID=abcde12345; Path=/; HttpOnly; Secure
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/LoginResponse'
+
+  /v1/logout:
+    post:
+      tags:
+        - auth
+      summary: Login
+      operationId: logout
+      responses:
+        '201':
+          description: Success
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Internal server error
+
+  /v1/host:
+    post:
+      tags:
+        - datacenter
+      summary: Add Host.
+      operationId: addHost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/AddHostRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Host'
+    get:
+      tags:
+        - datacenter
+      summary: Get hosts.
+      operationId: getHosts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items to return per page
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to fetch
+          required: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedHostResponse'
+
+  /v1/host/{hostId}:
+    get:
+      tags:
+        - datacenter
+      summary: Get host.
+      operationId: getHost
+      parameters:
+        - name: hostId
+          in: path
+          required: true
+          description: The unique identifier of the Host
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Host'
+  /v1/host/{hostId}/vm:
+    get:
+      tags:
+        - datacenter
+      summary: Get vms for a host.
+      operationId: getVmsOnHost
+      parameters:
+        - name: hostId
+          in: path
+          required: true
+          description: The unique identifier of the Host
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items to return per page
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to fetch
+          required: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedVMResponse'
+
+  /v1/host/{hostId}/network:
+    post:
+      tags:
+        - datacenter
+      summary: Add a network to a host
+      operationId: addNetwork
+      parameters:
+        - name: hostId
+          in: path
+          required: true
+          description: The unique identifier of the Host
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/AddNetworkRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Network'
+  /v1/host/{hostId}/storage:
+    get:
+      tags:
+        - datacenter
+      summary: Get vms for a host.
+      operationId: getStoragesOnHost
+      parameters:
+        - name: hostId
+          in: path
+          required: true
+          description: The unique identifier of the Host
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items to return per page
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to fetch
+          required: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedStorageResponse'
+    post:
+      tags:
+        - datacenter
+      summary: Add a storage to a host
+      operationId: addStorage
+      parameters:
+        - name: hostId
+          in: path
+          required: true
+          description: The unique identifier of the Host
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schema.yaml#/components/schemas/AddStorageRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Storage'
+  /v1/host/{hostId}/refresh:
+    post:
+      tags:
+        - datacenter
+      summary: Refresh host.
+      operationId: refreshHost
+      parameters:
+        - name: hostId
+          in: path
+          required: true
+          description: The unique identifier of the Host
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/RefreshHostResponse'
+  /v1/vm:
+    get:
+      tags:
+        - vm
+      summary: Get a list of virtual machines.
+      description: Get a list of virtual machines.
+      operationId: GetVms
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items to return per page
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to fetch
+          required: false
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedVMResponse'
+    post:
+      tags:
+        - vm
+      summary: Create a virtual machine.
+      description: |
+        Create a virtual machine.
+      operationId: createVm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVirtualMachineOnHostRequest'
+      responses:
+        '200':
+          description: A virtual machine is created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/CreateVirtualMachineResponse'
+
+  /v1/vm/{vmId}:
+    get:
+      tags:
+        - vm
+      summary: Get vm by vm id
+      operationId: getVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get vm by id
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/VirtualMachine'
+  /v1/vm/{vmId}/disk:
+    get:
+      tags:
+        - vm
+      summary: Get disks for a vm
+      operationId: getVmDisks
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get disks for a vm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disks'
+  /v1/vm/{vmId}/poweroff:
+    post:
+      tags:
+        - vm
+      summary: Power off a virtual machine.
+      description: |
+        Power off a virtual machine.
+      operationId: powerOffVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Power off virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/VirtualMachine'
+  /v1/vm/{vmId}/poweron:
+    post:
+      tags:
+        - vm
+      summary: Power on a virtual machine.
+      description: |
+        Power on a virtual machine.
+      operationId: powerOnVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Power on virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/VirtualMachine'
+  /v1/vm/{vmId}/reset:
+    post:
+      tags:
+        - vm
+      summary: Reset a virtual machine.
+      description: |
+        Reset a virtual machine.
+      operationId: resetVm
+      parameters:
+        - name: vmId
+          in: path
+          required: true
+          description: The unique identifier of the VM
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reset virtual machine response.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/VirtualMachine'
+
+  /v1/storage:
+    get:
+      tags:
+        - storage
+      summary: Get a list of storages.
+      operationId: getStorages
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items to return per page
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to fetch
+          required: false
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/PaginatedStorageResponse'
+
+  /v1/storage/{storageId}:
+    get:
+      tags:
+        - storage
+      summary: Get storage.
+      operationId: getStorage
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          description: storage id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/Storage'
+  /v1/storage/{storageId}/upload:
+    post:
+      summary: Upload a file
+      description: Upload a single file with optional metadata
+      operationId: uploadFile
+      tags:
+        - storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadFileReq'
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          description: storage id
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successful upload
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '413':
+          description: Payload too large
+        '500':
+          description: Internal server error
+
+  /v1/storage/{storageId}/files:
+    get:
+      tags:
+        - storage
+      summary: List files and directories
+      description: Retrieve a list of files and directories for a specific storage. The list includes items at the root level and one level deep. Supports file and directory names with spaces and special characters.
+      operationId: listFiles
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "/"
+          example: "/My%20Documents"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items to return per page
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: string
+          description: Page number to fetch
+          required: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: './schema.yaml#/components/schemas/ListFilesResponse'
+    post:
+      tags:
+        - storage
+      summary: Create directory or file
+      description: Create directory or file.
+      operationId: createFile
+      parameters:
+        - name: storageId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFileReq'
+      responses:
+        '204':
+          description: Successful response
+        '400':
+          description: Bad request (e.g., invalid path)
+        '404':
+          description: Storage or path not found
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    UploadFileReq:
+      type: object
+      properties:
+        data:
+          type: string
+        offset:
+          type: integer
+          format: int64
+        filePath:
+          type: string
+      required:
+        - data
+        - offset
+        - filePath
+    CreateFileReq:
+      type: object
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [ file, directory ]
+          description: Type of the item
+      required:
+        - name
+        - path
+        - type
+    Disks:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Disk'
+      required:
+        - items
+    Disk:
+      type: "object"
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        size:
+          type: integer
+          format: int64
+        storageId:
+          type: string
+      required:
+        - id
+        - size
+        - storageId
+        - uuid
+    CreateVirtualMachineOnHostRequest:
+      type: "object"
+      properties:
+        name:
+          type: string
+        cpu:
+          type: integer
+          format: int64
+        memory:
+          type: integer
+          format: int64
+        disks:
+          type: array
+          items:
+            $ref: './schema.yaml#/components/schemas/DiskRequest'
+        networks:
+          type: array
+          items:
+            $ref: './schema.yaml#/components/schemas/NetworkRequest'
+        hostId:
+          type: string
+        osInfo:
+          $ref: './schema.yaml#/components/schemas/OsInfo'
+        cdrom:
+          type: object
+          properties:
+            storageId:
+              type: string
+            isoPath:
+              type: string
+            connected:
+              type: boolean
+          required:
+            - storageId
+            - isoPath
+            - connected
+      required:
+        - name
+        - cpu
+        - memory
+        - disks
+        - networks
+        - hostId
+        - osInfo
+

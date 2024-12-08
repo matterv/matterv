@@ -1,0 +1,67 @@
+---
+title: Why MatterV?
+description: Motivation about the creation of MatterV.
+---
+
+
+
+MatterV is an open-source Virtual Machine management platform built on RHEL/AlmaLinux. It provides streamlined VM management with focus on usability, reliability, and performance.
+
+## Core Features
+* **Modern User Interface**: Clean, minimalist design with responsive layouts, dark/light themes, and streamlined workflows that simplify VM management for both novice and advanced users.
+* **Automated upgrades**: Unified upgrade system that updates all components (hypervisor, management tools, OS) with a single click, ensuring seamless version compatibility and forward upgrade path.
+* **Performance Optimization**: Smart resource management system that dynamically allocates compute resources based on real-time usage patterns and workload demands.
+* **Enterprise Linux Foundation**: Built on RHEL/AlmaLinux for 10+ year support lifecycle, extensive hardware compatibility including legacy systems, and enterprise-grade stability with minimal resource requirements.
+
+
+## Architecture
+![Matterv Arch](@assets/images/matterv-arch.png)
+
+
+### MatterV Cluster
+
+A centralized management layer that orchestrates multiple MatterV hosts, providing:
+* Unified management interface
+* Resource allocation across hosts
+* High availability coordination
+* Centralized monitoring and control
+
+### MatterV Hosts
+Individual compute nodes that:
+* Run virtual machines
+* Handle local resource management
+* Connect to the central cluster for coordination
+* Operate independently if cluster connection is lost
+
+### Communication Flow
+* Cluster broadcasts management decisions
+* Hosts report status and metrics
+* Inter-host communication for live migration
+* Automatic failover coordination
+
+
+## High Availability
+
+### Host Failure
+* VMs automatically migrate to healthy hosts
+* Resources redistributed automatically
+
+### Network Partition
+
+#### Host-Cluster Partition
+* VMs continue running without interruption
+* Host maintains full local management capability
+* All VM operations (start/stop/restart) remain available
+* Host automatically resynchronizes when connection restores
+
+#### Host-Host Partition
+* Each host continues operating independently
+* Local VMs remain fully functional
+* No impact on VM performance or availability
+* Automatic state reconciliation upon network recovery
+
+#### Complete Network Isolation
+* Host maintains all critical operations
+* VMs run at full performance
+* Local management interface remains accessible
+* No dependency on external connectivity

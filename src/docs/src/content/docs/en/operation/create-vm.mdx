@@ -1,0 +1,83 @@
+---
+title: Creating Virtual Machine
+description: Learn how to create and configure virtual machines in MatterV
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+# Creating Virtual Machine
+
+This guide walks you through the process of creating a new virtual machine (VM) in MatterV.
+
+## Prerequisites
+- MatterV Host is configured and connected
+- Storage is set up and available
+- Network is configured
+- ISO image is uploaded for OS installation
+
+## Creating a New VM
+
+<Steps>
+  1. Navigate to "Instances" page
+  2. Click the "Create Instance" button
+  3. Enter a name for your virtual machine
+  4. Set number of CPU cores
+  5. Set memory size (in GB)
+  6. Select guest OS type (Windows or Linux)
+  7. Choose a host for VM placement
+  8. Click "Add a disk" and select storage location
+  9. Set disk size (repeat if multiple disks needed)
+  10. Click "Choose An ISO" and select your OS installation image
+  11. Click "Add a network" and select your network
+  12. Click "Submit" to create the VM
+</Steps>
+
+<img src="/matterv-create-vm.gif" alt="Create Vm" />
+
+
+## Configuration Reference
+
+### Basic Settings
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| VM Name | Unique identifier for your VM | `web-server-01` |
+| CPU Cores | Number of virtual CPU cores | `2` cores |
+| Memory | Amount of RAM allocated | `4` GB |
+| Guest OS | Operating system type | Windows or Linux |
+| Host | Physical server for VM placement | `host-01` |
+
+### Storage Tips
+- Create multiple disks if needed (e.g., separate system and data disks)
+- Ensure enough free space in storage pool
+- Consider OS requirements for minimum disk size
+
+### Network Configuration
+Your VM will use the basic network configured on the host (typically `virbr0`).
+
+
+
+## After VM Creation
+
+The VM will be created and started automatically within a few seconds. Once running, you have several management options:
+
+### Accessing the VM Console
+
+<Steps>
+  1. Find your VM in the instances list
+  2. Click the "Console" button
+  3. A new browser tab will open showing the VM's display
+  4. You can now interact with the VM directly through your browser
+</Steps>
+
+:::tip[Console Access]
+The console provides direct access to your VM, similar to having a physical monitor connected. This is particularly useful during OS installation or when you need direct access to the system.
+:::
+
+### Basic VM Controls
+
+<Steps>
+  1. Locate your VM in the instances list
+  2. Use the control buttons to: Stop the VM (graceful shutdown) or Reboot the VM (graceful restart)
+  3. Wait for the operation to complete
+</Steps>

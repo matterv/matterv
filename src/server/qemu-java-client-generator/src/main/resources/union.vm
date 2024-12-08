@@ -1,0 +1,28 @@
+package $packageName;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class $className
+#if($baseClass && $baseClass != "")
+extends $baseClass
+#end
+{
+#foreach($field in $fields)
+@JsonProperty("${field.origName()}")
+    public ${field.type().toJavaType()} ${field.toJavaName()};
+
+#end
+
+#foreach($field in $fields)
+    public static $className ${field.toJavaName()} (${field.type().toJavaType()} a)
+    {
+        var self = new $className();
+        self.${field.toJavaName()} = a;
+        self.$discriminator = $discriminatorType.${field.toJavaName()};
+        return self;
+    }
+#end
+}
+

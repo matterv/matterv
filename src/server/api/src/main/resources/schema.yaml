@@ -1,0 +1,683 @@
+components:
+  parameters:
+    PageParam:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number to fetch
+      required: true
+    LimitParam:
+      in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+      description: Number of items to return per page
+      required: true
+  schemas:
+    Error:
+      description: "Error information from a response."
+      type: "object"
+      properties:
+        error_code:
+          type: "string"
+        message:
+          type: "string"
+        request_id:
+          type: string
+      required:
+        - message
+        - request_id
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: The user's username
+        password:
+          type: string
+          description: The user's password
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        errorMessage:
+          type: string
+    PhysicalNetworkType:
+      type: string
+      enum:
+        - PHYSICAL
+        - BRIDGE
+    PhysicalNetwork:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/PhysicalNetworkType'
+        ipAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+      required:
+        - name
+        - type
+    IpAddressType:
+      type: string
+      enum:
+        - IPV4
+        - IPV6
+    IpAddress:
+      type: object
+      properties:
+        ip:
+          type: string
+        type:
+          $ref: '#/components/schemas/IpAddressType'
+      required:
+        - ip
+        - type
+
+    NetworkType:
+      type: string
+      enum:
+        - PHYSICAL
+        - BRIDGE
+    Network:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/NetworkType'
+      required:
+        - id
+        - name
+        - type
+    StorageType:
+      type: string
+      enum:
+        - NFS
+        - LOCAL
+    StorageStatus:
+      type: string
+      enum:
+        - Initial
+        - READY
+    Storage:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        mountPoint:
+          type: string
+        storageType:
+          $ref: '#/components/schemas/StorageType'
+        status:
+          $ref: '#/components/schemas/StorageStatus'
+        capacityInBytes:
+          type: integer
+          format: int64
+        freeInBytes:
+          type: integer
+          format: int64
+        hostId:
+          type: string
+      required:
+        - id
+        - name
+        - storageType
+        - mountPoint
+        - hostId
+        - status
+    HostStatus:
+      type: string
+      enum:
+        - READY
+        - UNINITIALIZED
+        - MAINTENANCE
+    Hierarchy:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - DATA_CENTER
+            - COMPUTE_CLUSTER
+            - HOST
+      required:
+        - id
+        - type
+    HierarchyInfo:
+      type: object
+      properties:
+        hierarchies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hierarchy'
+      required:
+        - hierarchies
+    HostInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        os:
+          type: string
+        kernel:
+          type: string
+        hostname:
+          type: string
+        arch:
+          type: string
+      required:
+        - id
+        - os
+        - kernel
+        - hostname
+        - arch
+    HostStats:
+      type: object
+      properties:
+        usedCpu:
+          type: integer
+          format: int64
+        usedMemory:
+          type: integer
+          format: int64
+        usedStorages:
+          type: integer
+          format: int64
+      required:
+        - usedCpu
+        - usedMemory
+        - usedStorages
+    Host:
+      type: "object"
+      properties:
+        name:
+          type: string
+        cpu:
+          type: integer
+          format: int64
+        memory:
+          type: integer
+          format: int64
+        storage:
+          type: integer
+          format: int64
+        vmStorages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Storage'
+        vmNetwork:
+          $ref: '#/components/schemas/Network'
+        localStorages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Storage'
+        physicalNetworks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Network'
+        status:
+          $ref: '#/components/schemas/HostStatus'
+        hostStats:
+          $ref: '#/components/schemas/HostStats'
+        id:
+          type: string
+      required:
+        - name
+        - cpu
+        - memory
+        - id
+        - status
+        - hostStats
+        - storage
+    VMStatus:
+      type: string
+      enum:
+        - CREATING
+        - STARTING
+        - RUNNING
+        - STOPPING
+        - STOPPED
+        - REBOOTING
+        - FAILED
+        - DESTROYED
+    Vnc:
+      type: object
+      properties:
+        port:
+          type: integer
+        host:
+          type: string
+        vmId:
+          type: string
+      required:
+        - vmId
+    VirtualMachine:
+      type: "object"
+      properties:
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VMStatus'
+        id:
+          type: string
+        uuid:
+          type: string
+          format: uuid
+        cpu:
+          type: integer
+          format: int64
+        memory:
+          type: integer
+          format: int64
+        ipAddresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/IpAddress'
+        vnc:
+          $ref: '#/components/schemas/Vnc'
+        hostId:
+          type: string
+        vmConfig:
+          type: string
+      required:
+        - name
+        - status
+        - id
+        - uuid
+        - cpu
+        - memory
+        - vmConfig
+        - hostId
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        objectId:
+          type: string
+        status:
+          $ref: '#/components/schemas/AsyncRequestStatus'
+        progress:
+          type: integer
+        type:
+          type: string
+      required:
+        - id
+        - objectId
+        - status
+        - progress
+        - type
+    AsyncRequestStatus:
+      type: string
+      enum:
+        - queued
+        - running
+        - finished
+        - failed
+        - scheduled
+    PaginatedVMResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/VirtualMachine'
+        next_page:
+          type: string
+      required:
+        - items
+    PaginatedJobResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Job'
+          required:
+            - data
+    PaginatedHostResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Host'
+        next_page:
+          type: string
+      required:
+        - items
+    PaginatedStorageResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Storage'
+        next_page:
+          type: string
+      required:
+        - items
+    DataCenterResponse:
+      type: object
+      properties:
+        dataCenters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataCenter'
+      required:
+        - dataCenters
+    PaginatedResponse:
+      type: object
+      properties:
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+      required:
+        - pagination
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        page:
+          type: integer
+          description: Current page number
+        limit:
+          type: integer
+          description: Number of items per page
+      required:
+        - total
+        - pages
+        - page
+        - limit
+    PowerOffVirtualMachineResponse:
+      type: object
+      properties:
+        vmId:
+          type: string
+        jobId:
+          type: string
+      required:
+        - vmId
+        - jobId
+    ConfigVirtualMachineResponse:
+      type: object
+      properties:
+        vmId:
+          type: string
+        jobId:
+          type: string
+    PowerOnVirtualMachineResponse:
+      type: object
+      properties:
+        vmId:
+          type: string
+        jobId:
+          type: string
+      required:
+        - vmId
+        - jobId
+    ResetVirtualMachineResponse:
+      type: object
+      properties:
+        vmId:
+          type: string
+        jobId:
+          type: string
+      required:
+        - vmId
+        - jobId
+    CreateVirtualMachineRequest:
+      type: "object"
+      properties:
+        name:
+          type: string
+        cpu:
+          type: integer
+          format: int64
+        memory:
+          type: integer
+          format: int64
+        disks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiskRequest'
+        networks:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkRequest'
+        osInfo:
+          $ref: '#/components/schemas/OsInfo'
+        cdrom:
+          type: object
+          properties:
+            storageId:
+              type: string
+            isoPath:
+              type: string
+            connected:
+              type: boolean
+          required:
+            - storageId
+            - isoPath
+            - connected
+      required:
+        - name
+        - cpu
+        - memory
+        - disks
+        - networks
+        - osInfo
+    CreateVirtualMachineResponse:
+      type: object
+      properties:
+        vm:
+          $ref: '#/components/schemas/VirtualMachine'
+        jobId:
+          type: string
+      required:
+        - vm
+        - jobId
+    DiskRequest:
+      type: "object"
+      properties:
+        id:
+          type: integer
+        size:
+          type: integer
+          format: int64
+        storageId:
+          type: string
+        storageName:
+          type: string
+      required:
+        - size
+        - storageId
+        - id
+        - storageName
+    NetworkRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        networkId:
+          type: string
+        connected:
+          type: boolean
+      required:
+        - id
+        - networkId
+        - connected
+    DataCenter:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        computeClusters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComputeCluster'
+      required:
+        - id
+        - name
+        - computeClusters
+    ComputeCluster:
+      type: object
+      properties:
+        id:
+          type: string
+        dataCenterId:
+          type: string
+        name:
+          type: string
+        hosts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Host'
+      required:
+        - id
+        - name
+        - hosts
+        - dataCenterId
+    CreateDataCenterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    CreateComputeClusterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    AddHostRequest:
+      type: object
+      properties:
+        description:
+          type: string
+        hostName:
+          type: string
+        port:
+          type: integer
+      required:
+        - hostName
+        - port
+    AddNetworkRequest:
+      type: object
+      properties:
+        networkId:
+          type: string
+      required:
+        - networkId
+    AddStorageRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/StorageType'
+        name:
+          type: string
+        path:
+          type: string
+        server:
+          type: string
+        port:
+          type: integer
+      required:
+        - type
+        - name
+    AddHostResponse:
+      type: object
+      properties:
+        host:
+          $ref: '#/components/schemas/Host'
+        jobId:
+          type: string
+      required:
+        - host
+        - jobId
+    RefreshHostResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+      required:
+        - jobId
+    File:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the file or directory (may contain spaces and special characters)
+        encodedName:
+          type: string
+          description: URL-encoded name for use in subsequent API calls
+        type:
+          type: string
+          enum: [ file, directory ]
+          description: Type of the item
+        size:
+          type: integer
+          description: Size of the file in bytes (null for directories)
+        modifiedAt:
+          type: string
+          format: date-time
+          description: Last modification date and time
+      required:
+        - name
+        - type
+        - size
+        - modifiedAt
+
+    ListFilesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        next_page:
+          type: string
+      required:
+        - items
+
+    OsType:
+      type: string
+      enum:
+        - Windows
+        - Linux
+    OsInfo:
+      type: object
+      properties:
+        osType:
+          $ref: '#/components/schemas/OsType'
+      required:
+        - osType

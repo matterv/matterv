@@ -1,0 +1,45 @@
+database:
+  driverClass: org.sqlite.JDBC
+  # the JDBC URL
+  url: jdbc:sqlite:/opt/matterv/host/db/data.db
+  autoCommentsEnabled: false
+
+logging:
+  level: INFO
+  loggers:
+    "computer.matter": ALL
+  appenders:
+    - type: file
+      currentLogFilename: /var/log/matterv-host/host.log
+
+      archivedLogFilenamePattern: /var/log/matterv-host/host-%d.log.gz
+
+      archivedFileCount: 7
+
+      timeZone: UTC
+vmMetadataRootDir: "/var/run/matterv-host/vms"
+
+webRootDir: "/opt/matterv/host/web"
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 8442
+    - type: https
+      port: 8443
+      keyStorePath: "/opt/matterv/host/certs/host.jks"
+      keyStorePassword: "hoststorepass"
+      trustStorePath: "/opt/matterv/host/certs/truststore.jks"
+      trustStorePassword: "mattervpass"
+      validateCerts: false
+      disableSniHostCheck: true
+      wantClientAuth: true
+  adminConnectors:
+    - type: https
+      port: 8444
+      keyStorePath: "/opt/matterv/host/certs/host.jks"
+      keyStorePassword: "hoststorepass"
+      trustStorePath: "/opt/matterv/host/certs/truststore.jks"
+      trustStorePassword: "mattervpass"
+      disableSniHostCheck: true
+      validateCerts: false
