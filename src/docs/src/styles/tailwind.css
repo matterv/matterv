@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.social-icons::after {
+  display: none;
+}
 :root {
   --sl-hue-accent: 255;
   --overlay-blurple: hsla(var(--sl-hue-accent), 60%, 60%, 0.2);

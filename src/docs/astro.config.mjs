@@ -32,7 +32,11 @@ export default defineConfig({
         },
       ],
       customCss: ["./src/styles/tailwind.css"],
-
+      components: {
+        SocialIcons: "./src/components/custom-navbar-links.astro",
+        ThemeProvider: "./src/components/theme-provider.astro",
+        ThemeSelect: "./src/components/theme-provider.astro",
+      },
       lastUpdated: true,
       sidebar: [
         {
