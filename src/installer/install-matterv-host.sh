@@ -63,7 +63,7 @@ install_from_network() {
 
   rm -rf /opt/matterv/matterv-host-0.6*
 
-  curl -L  -H "Authorization: Bearer ${token}"  -H "Accept: application/octet-stream" https://api.github.com/repos/matterv/matterv/releases/assets/211801751 -o /opt/matterv/matterv-host-0.6.tar.xz
+  curl -L https://github.com/matterv/matterv/releases/download/v0.6.0/matterv-host-0.6.tar.xz -o /opt/matterv/matterv-host-0.6.tar.xz
   tar -xf /opt/matterv/matterv-host-0.6.tar.xz -C /opt/matterv/
   BINARY=/opt/matterv/matterv-host-0.6.tar.xz
   BINARY_NAME=$(basename $BINARY .tar.xz)
