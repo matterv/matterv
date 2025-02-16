@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERSION=0.7.0
+
 usage() {
     echo "Usage: $0 -l binary path"
     echo "  -l: MatterV host binary path"
@@ -14,6 +16,71 @@ while getopts "l:" opt; do
         ?) usage ;;
     esac
 done
+
+load_kvm_modules() {
+  # Reload the KVM module with enable_vmware_backdoor=Y
+  echo "Reloading KVM module with enable_vmware_backdoor=Y..."
+  sudo modprobe kvm enable_vmware_backdoor=1
+
+  if [ $? -eq 0 ]; then
+    echo "KVM module successfully reloaded with enable_vmware_backdoor=Y."
+  else
+    echo "Failed to reload the KVM module. You may need root privileges."
+    exit 1
+  fi
+  sudo modprobe kvm_amd kvm_intel
+}
+
+enable_vmware() {
+  PARAM_FILE="/sys/module/kvm/parameters/enable_vmware_backdoor"
+  if [ ! -f "$PARAM_FILE" ]; then
+    load_kvm_modules
+    return
+  fi
+
+  # Read the current value
+  CURRENT_VALUE=$(cat "$PARAM_FILE")
+
+  # Check if the current value is not 'Y'
+  if [ "$CURRENT_VALUE" == "Y" ]; then
+    echo "kvm has vmware enabled already"
+    return
+  fi
+
+  echo "Checking for running qemu-kvm processes..."
+  QEMU_PROCESSES=$(pgrep qemu-kvm)
+
+  if [ -n "$QEMU_PROCESSES" ]; then
+      echo "Found running qemu-kvm processes. Killing them..."
+      sudo kill -9 $QEMU_PROCESSES
+      if [ $? -eq 0 ]; then
+          echo "All qemu-kvm processes have been terminated."
+      else
+          echo "Failed to kill qemu-kvm processes. You may need root privileges."
+          exit 1
+      fi
+  else
+      echo "No qemu-kvm processes are running."
+  fi
+
+  # Check if the KVM module is loaded
+  if lsmod | grep -q "kvm"; then
+      echo "KVM module is loaded. Unloading it..."
+
+      # Unload the KVM module
+      sudo modprobe -r kvm_intel kvm_amd kvm
+      if [ $? -eq 0 ]; then
+          echo "KVM module successfully unloaded."
+      else
+          echo "Failed to unload the KVM module. You may need root privileges or there may be dependencies."
+          exit 1
+      fi
+  else
+      echo "KVM module is not loaded."
+  fi
+
+  load_kvm_modules
+}
 
 BINARY=""
 BINARY_NAME=""
@@ -57,11 +124,11 @@ install_from_network() {
     mkdir -p /opt/matterv
   fi
 
-  rm -rf /opt/matterv/matterv-host-0.6*
+  rm -rf /opt/matterv/matterv-host-${VERSION}*
 
-  curl -L https://github.com/matterv/matterv/releases/download/v0.6.0/matterv-host-0.6.tar.xz -o /opt/matterv/matterv-host-0.6.tar.xz
-  tar -xf /opt/matterv/matterv-host-0.6.tar.xz -C /opt/matterv/
-  BINARY=/opt/matterv/matterv-host-0.6.tar.xz
+  curl -L https://github.com/matterv/matterv/releases/download/v${VERSION}/matterv-host-${VERSION}.tar.xz -o /opt/matterv/matterv-host-${VERSION}.tar.xz
+  tar -xf /opt/matterv/matterv-host-${VERSION}.tar.xz -C /opt/matterv/
+  BINARY=/opt/matterv/matterv-host-${VERSION}.tar.xz
   BINARY_NAME=$(basename $BINARY .tar.xz)
   install
 }

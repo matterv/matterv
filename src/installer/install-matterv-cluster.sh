@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERSION=0.7.0
+
 usage() {
     echo "Usage: $0 -l binary path"
     echo "  -l: MatterV cluster binary path"
@@ -55,11 +57,11 @@ install_from_network() {
     mkdir -p /opt/matterv
   fi
 
-  rm -rf /opt/matterv/matterv-cluster-0.6*
+  rm -rf /opt/matterv/matterv-cluster-${VERSION}*
 
-  curl -L https://github.com/matterv/matterv/releases/download/v0.6.0/matterv-cluster-0.6.tar.xz -o /opt/matterv/matterv-cluster-0.6.tar.xz
-  tar -xf /opt/matterv/matterv-cluster-0.6.tar.xz -C /opt/matterv/
-  BINARY=/opt/matterv/matterv-cluster-0.6.tar.xz
+  curl -L https://github.com/matterv/matterv/releases/download/v${VERSION}/matterv-cluster-${VERSION}.tar.xz -o /opt/matterv/matterv-cluster-${VERSION}.tar.xz
+  tar -xf /opt/matterv/matterv-cluster-${VERSION}.tar.xz -C /opt/matterv/
+  BINARY=/opt/matterv/matterv-cluster-${VERSION}.tar.xz
   BINARY_NAME=$(basename $BINARY .tar.xz)
   install
 }
