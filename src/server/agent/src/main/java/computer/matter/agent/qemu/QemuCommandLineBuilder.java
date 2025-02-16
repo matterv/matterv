@@ -2,7 +2,13 @@ package computer.matter.agent.qemu;
 
 import computer.matter.agent.common.storage.UefiUtils;
 import computer.matter.os.OsInfoUtil;
-import computer.matter.vm.*;
+import computer.matter.vm.VirtualCdrom;
+import computer.matter.vm.VirtualDisk;
+import computer.matter.vm.VirtualDiskController;
+import computer.matter.vm.VirtualDiskControllerType;
+import computer.matter.vm.VirtualMachineConfig;
+import computer.matter.vm.VirtualMachineType;
+import computer.matter.vm.VirtualNic;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,17 +17,19 @@ import java.util.stream.Stream;
 public class QemuCommandLineBuilder {
   List<String> build(VirtualMachineConfig config) {
     return Stream.of(
-        List.of("-daemonize"),
-        buildBios(config),
-        buildMachine(config.machineType),
-        buildCpu(config.cpu),
-        buildMemory(config.memoryInMB),
-        buildKvm(),
-        buildDisplay(config),
-        buildName(config.name, config.uuid),
-        buildDevices(config),
-        buildQmp(config),
-        buildPidfile(config.pidFile())).flatMap(List::stream).toList();
+            List.of("-daemonize"),
+            buildBios(config),
+            buildMachine(config.machineType),
+            buildCpu(config.cpu),
+            buildMemory(config.memoryInMB),
+            buildKvm(),
+            buildDisplay(config),
+            buildName(config.name, config.uuid),
+            buildDevices(config),
+            buildQmp(config),
+            buildPidfile(config.pidFile()),
+            enableVmci()
+    ).flatMap(List::stream).toList();
   }
 
 
@@ -62,9 +70,9 @@ public class QemuCommandLineBuilder {
 
   List<String> buildQmp(VirtualMachineConfig vmConfig) {
     return List.of("-chardev", "socket,id=qmp,path=" + vmConfig.qmp() + ",server=on,wait=off",
-        "-mon", "chardev=qmp,mode=control", "-chardev",
-        "socket,id=qmp-event,path=" + vmConfig.qmpEvent() + ",reconnect=5",
-        "-mon", "chardev=qmp-event,mode=control");
+            "-mon", "chardev=qmp,mode=control", "-chardev",
+            "socket,id=qmp-event,path=" + vmConfig.qmpEvent() + ",reconnect=5",
+            "-mon", "chardev=qmp-event,mode=control");
   }
 
 
@@ -91,7 +99,9 @@ public class QemuCommandLineBuilder {
   }
 
   List<String> buildBios(VirtualMachineConfig config) {
-    var uefi = List.of("-drive","if=pflash,unit=0,format=raw,readonly=on,file=" + UefiUtils.OVMF_CODE_PATH, "-drive", "if=pflash,unit=1,format=raw,file=" + config.uefiFile());
+    var uefi = List.of(
+            "-drive", "if=pflash,unit=0,format=raw,readonly=on,file=" + UefiUtils.OVMF_CODE_PATH,
+            "-drive", "if=pflash,unit=1,format=raw,file=" + config.uefiFile());
     var smbios = List.of("-smbios", "type=1,uuid=" + config.uuid);
     return Stream.concat(smbios.stream(), uefi.stream()).toList();
   }
@@ -100,11 +110,14 @@ public class QemuCommandLineBuilder {
     var fileNodeName = "disk" + disk.id + "_file";
     var diskNodeName = "disk" + disk.id;
     var fileBlockDev = List.of("-blockdev",
-        "driver=file,node-name=" + fileNodeName + ",filename=" + disk.file);
+            "driver=file,node-name=" + fileNodeName + ",filename=" + disk.file);
     var driverMode = List.of("-blockdev",
-        "driver=" + disk.fileType.getValue() + ",node-name=" + diskNodeName + ",file=" + fileNodeName);
+            "driver=" + disk.fileType.getValue() + ",node-name=" + diskNodeName + ",file=" + fileNodeName);
     var controller = String.format("scsihw%d.0", disk.controllerId);
-    var device = List.of("-device", "scsi-hd,bus=" + controller + ",scsi-id=" + disk.id + ",drive=" + diskNodeName +",bootindex=" + (disk.id + 1));
+    var device = List.of(
+            "-device",
+            "scsi-hd,bus=" + controller + ",scsi-id=" + disk.id + ",drive=" + diskNodeName + ",bootindex=" + (disk.id + 1)
+    );
     return Stream.of(fileBlockDev, driverMode, device).flatMap(List::stream).toList();
   }
 
@@ -120,5 +133,9 @@ public class QemuCommandLineBuilder {
       backing = List.of("-net", "bridge,br=" + n.backingDev);
     }
     return Stream.concat(nic.stream(), backing.stream()).toList();
+  }
+
+  List<String> enableVmci() {
+    return List.of("-device", "vmci");
   }
 }
