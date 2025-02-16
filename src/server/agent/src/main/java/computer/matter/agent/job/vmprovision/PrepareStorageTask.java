@@ -58,6 +58,7 @@ public class PrepareStorageTask implements Task {
 
       var disk = storage.createDisk(diskRequirement.sizeInGB, jobConfig.vmConfig.uuid, diskRequirement.id);
       persistDisk(disk, storageDo, jobConfig.vmId);
+      disk.controllerId = diskRequirement.controllerId;
       return disk;
     }).toList();
 

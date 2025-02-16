@@ -47,11 +47,7 @@ upgrade() {
 }
 
 install() {
-  if [ ! -d "/opt/matterv" ] || { [ ! -L "/opt/matterv/host" ] || [ ! -d "/opt/matterv/host" ]; }; then
-    refresh_install
-  else
-    upgrade
-  fi
+  refresh_install
 }
 
 install_from_network() {

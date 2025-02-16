@@ -2,12 +2,7 @@ package computer.matter.agent.qemu;
 
 import computer.matter.agent.common.storage.UefiUtils;
 import computer.matter.os.OsInfoUtil;
-import computer.matter.vm.VirtualCdrom;
-import computer.matter.vm.VirtualDevice;
-import computer.matter.vm.VirtualDisk;
-import computer.matter.vm.VirtualMachineConfig;
-import computer.matter.vm.VirtualMachineType;
-import computer.matter.vm.VirtualNic;
+import computer.matter.vm.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +19,6 @@ public class QemuCommandLineBuilder {
         buildKvm(),
         buildDisplay(config),
         buildName(config.name, config.uuid),
-        buildDiskController(config),
         buildDevices(config),
         buildQmp(config),
         buildPidfile(config.pidFile())).flatMap(List::stream).toList();
@@ -79,16 +73,21 @@ public class QemuCommandLineBuilder {
       case VirtualDisk disk -> buildDisk(disk).stream();
       case VirtualNic nic -> buildNic(nic, config).stream();
       case VirtualCdrom cdrom -> buildCdrom(cdrom).stream();
+      case VirtualDiskController controller -> buildDiskController(controller).stream();
       default -> Stream.of();
     }).toList();
   }
 
-  List<String> buildDiskController(VirtualMachineConfig vmConfig) {
-      if (OsInfoUtil.isLinux(vmConfig.osId)) {
-        return List.of("-device", "virtio-scsi-pci,id=scsihw0");
-      } else {
-        return List.of("-device", "mptsas1068,id=scsihw0");
-      }
+  List<String> buildDiskController(VirtualDiskController controller) {
+    if (controller.type == VirtualDiskControllerType.SCSI) {
+      var model = switch (controller.model) {
+        case LSI -> "mptsas1068";
+        case PVSCSI -> "pvscsi";
+      };
+      return List.of("-device", String.format("%s,id=scsihw%d", model, controller.id));
+    } else {
+      throw new RuntimeException(controller.type + " is not supported");
+    }
   }
 
   List<String> buildBios(VirtualMachineConfig config) {
@@ -104,7 +103,8 @@ public class QemuCommandLineBuilder {
         "driver=file,node-name=" + fileNodeName + ",filename=" + disk.file);
     var driverMode = List.of("-blockdev",
         "driver=" + disk.fileType.getValue() + ",node-name=" + diskNodeName + ",file=" + fileNodeName);
-    var device = List.of("-device", "scsi-hd,bus=scsihw0.0,scsi-id=" + disk.id + ",drive=" + diskNodeName +",bootindex=" + (disk.id + 1));
+    var controller = String.format("scsihw%d.0", disk.controllerId);
+    var device = List.of("-device", "scsi-hd,bus=" + controller + ",scsi-id=" + disk.id + ",drive=" + diskNodeName +",bootindex=" + (disk.id + 1));
     return Stream.of(fileBlockDev, driverMode, device).flatMap(List::stream).toList();
   }
 

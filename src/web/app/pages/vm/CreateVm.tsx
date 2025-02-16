@@ -58,6 +58,7 @@ import { PageHeader, PageTitle } from "~/ui/lib/PageHeader.tsx";
 import { ALL_ISH } from "~/util/consts.ts";
 import { pb } from "~/util/path-builder";
 import { GiB } from "~/util/units.ts";
+import { DiskControllerField } from "~/pages/vm/DiskController.tsx";
 
 const baseDefaultValues: CreateVirtualMachineOnHostRequest = {
   name: "",
@@ -67,6 +68,7 @@ const baseDefaultValues: CreateVirtualMachineOnHostRequest = {
   networks: [],
   hostId: "",
   osInfo: { osType: "Windows" },
+  diskControllers: [{ id: 1, type: "SCSI", model: "LSI" }],
 };
 
 CreateVm.loader = async () => {
@@ -549,11 +551,19 @@ export function CreateVm() {
         id="create-instance-form"
         form={form}
         onSubmit={async (values) => {
-          console.log(values);
+          const req = {
+            ...values,
+            memory: values.memory * GiB,
+            disks: values.disks.map((disk) => ({
+              ...disk,
+              controllerId: Number(disk.controllerId),
+            })),
+          };
+          console.log(req);
           setIsSubmitting(true);
 
           await createInstance.mutateAsync({
-            body: { ...values, memory: values.memory * GiB },
+            body: req,
           });
         }}
         loading={createInstance.isPending}
@@ -565,8 +575,7 @@ export function CreateVm() {
         <GuestOsField control={control} />
         <HostField control={control} hosts={hosts} />
 
-        <FormDivider />
-        <Form.Heading id="disks">Disks</Form.Heading>
+        <DiskControllerField control={control} />
         <DisksTableField
           control={control}
           disabled={isSubmitting}

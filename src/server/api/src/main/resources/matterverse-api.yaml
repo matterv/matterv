@@ -636,6 +636,8 @@ components:
         - size
         - storageId
         - uuid
+
+
     CreateVirtualMachineOnHostRequest:
       type: "object"
       properties:
@@ -647,6 +649,10 @@ components:
         memory:
           type: integer
           format: int64
+        diskControllers:
+          type: array
+          items:
+            $ref: './schema.yaml#/components/schemas/DiskController'
         disks:
           type: array
           items:
@@ -680,4 +686,5 @@ components:
         - networks
         - hostId
         - osInfo
+        - diskControllers
 

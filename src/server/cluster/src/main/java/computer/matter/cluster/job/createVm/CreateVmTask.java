@@ -43,6 +43,14 @@ public class CreateVmTask implements Task {
     return req;
   }
 
+  private DiskController from(computer.matter.cluster.model.DiskController diskController) {
+    var req = new DiskController();
+    req.setId(diskController.getId());
+    req.setType(DiskController.TypeEnum.fromValue(diskController.getType().value()));
+    req.setModel(DiskController.ModelEnum.fromValue(diskController.getModel().value()));
+    return req;
+  }
+
   private DiskRequest from(computer.matter.cluster.model.DiskRequest diskRequest) {
     var storageDao = jdbi.onDemand(StorageDao.class);
     var storage = storageDao.findByUUID(diskRequest.getStorageId());
@@ -55,6 +63,7 @@ public class CreateVmTask implements Task {
     req.setStorageId(storage.uuidOnHost.toString());
     req.setId(diskRequest.getId());
     req.setStorageName(diskRequest.getStorageName());
+    req.setControllerId(diskRequest.getControllerId());
     return req;
   }
 
@@ -89,6 +98,7 @@ public class CreateVmTask implements Task {
 
     createVirtualMachineRequest.setDisks(req.getDisks().stream().map(this::from).toList());
     createVirtualMachineRequest.setNetworks(req.getNetworks().stream().map(this::from).toList());
+    createVirtualMachineRequest.setDiskControllers(req.getDiskControllers().stream().map(this::from).toList());
 
     return createVirtualMachineRequest;
   }

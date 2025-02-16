@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = VirtualDisk.class, name = "VirtualDisk"),
         @JsonSubTypes.Type(value = VirtualNic.class, name = "VirtualNic"),
         @JsonSubTypes.Type(value = VirtualCdrom.class, name = "VirtualCdrom"),
+        @JsonSubTypes.Type(value = VirtualDiskController.class, name = "VirtualDiskController"),
 })
 public abstract class VirtualDevice {
   public long id;

@@ -7,6 +7,7 @@ public class Disk {
   public String path;
   public long id;
   public boolean connected;
+  public long controllerId;
 
   public Disk() {
 

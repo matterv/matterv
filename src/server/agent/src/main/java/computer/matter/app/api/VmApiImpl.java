@@ -12,18 +12,7 @@ import computer.matter.agent.job.vmprovision.VmProvisionJobConfig;
 import computer.matter.agent.job.vmprovision.VmProvisionJobRunner;
 import computer.matter.agent.job.vmprovision.VmProvisionRequirement;
 import computer.matter.host.api.VmApi;
-import computer.matter.host.model.ConfigVirtualMachineResponse;
-import computer.matter.host.model.CreateVirtualMachineRequest;
-import computer.matter.host.model.CreateVirtualMachineResponse;
-import computer.matter.host.model.IpAddress;
-import computer.matter.host.model.IpAddressType;
-import computer.matter.host.model.PaginatedVMResponse;
-import computer.matter.host.model.PaginationInfo;
-import computer.matter.host.model.PowerOffVirtualMachineResponse;
-import computer.matter.host.model.PowerOnVirtualMachineResponse;
-import computer.matter.host.model.ResetVirtualMachineResponse;
-import computer.matter.host.model.VMStatus;
-import computer.matter.host.model.VirtualMachine;
+import computer.matter.host.model.*;
 import computer.matter.job.Job;
 import computer.matter.job.JobClient;
 import computer.matter.job.JobStatus;
@@ -85,6 +74,7 @@ public class VmApiImpl implements VmApi {
     requirement.name = createVirtualMachineRequest.getName();
     requirement.cpu = createVirtualMachineRequest.getCpu();
     requirement.memoryInMB = BinaryUnits.toMiB(createVirtualMachineRequest.getMemory());
+    requirement.diskControllers = createVirtualMachineRequest.getDiskControllers();
     requirement.diskRequirements = Streams.mapWithIndex(
             createVirtualMachineRequest.getDisks().stream(),
             (d, idx) -> {
@@ -92,6 +82,7 @@ public class VmApiImpl implements VmApi {
               dr.sizeInGB = d.getSize();
               dr.storageId = UUID.fromString(d.getStorageId());
               dr.id = (int) idx;
+              dr.controllerId = d.getControllerId();
               return dr;
             }
     ).toList();

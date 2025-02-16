@@ -7,7 +7,7 @@
  *  * Copyright Loma Technology LLC
  *
  */
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useController, type Control } from "react-hook-form";
 
 import type { CreateVirtualMachineOnHostRequest, Host } from "@oxide/api";
@@ -17,6 +17,8 @@ import { Button } from "~/ui/lib/Button";
 import { FieldLabel } from "~/ui/lib/FieldLabel";
 import * as MiniTable from "~/ui/lib/MiniTable";
 import { GiB } from "~/util/units.ts";
+import { Form } from "~/components/form/Form.tsx";
+import { FormDivider } from "~/ui/lib/Divider.tsx";
 
 export function DisksTableField({
   control,
@@ -30,6 +32,11 @@ export function DisksTableField({
   const {
     field: { value: hostId },
   } = useController({ control, name: "hostId" });
+
+  const {
+    field: { value: diskControllers },
+  } = useController({ control, name: "diskControllers" });
+
   const host = hosts.find((h) => h.id === hostId);
   const [showDiskCreate, setShowDiskCreate] = useState(false);
   const storages = useMemo(() => host?.vmStorages || [], [host?.vmStorages]);
@@ -43,6 +50,8 @@ export function DisksTableField({
   }
   return (
     <>
+      <FormDivider />
+      <Form.Heading id="disks">Disks</Form.Heading>
       <div className="max-w-lg">
         <FieldLabel id="new-disks-label">{/* this was empty */}</FieldLabel>
         {!!items.length && (
@@ -105,6 +114,7 @@ export function DisksTableField({
           onDismiss={() => setShowDiskCreate(false)}
           host={host as Host}
           diskId={items.length + 1}
+          diskControllers={diskControllers}
         />
       )}
     </>

@@ -45,11 +45,7 @@ upgrade() {
 }
 
 install() {
-  if [ ! -d "/opt/matterv" ] || { [ ! -L "/opt/matterv/cluster" ] || [ ! -d "/opt/matterv/cluster" ]; }; then
-    refresh_install
-  else
-    upgrade
-  fi
+  refresh_install
 }
 
 install_from_network() {

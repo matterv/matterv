@@ -1,14 +1,12 @@
-/*
- *
- *  * This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
- *  *
- *  * Copyright Loma Technology LLC
- *
- */
-
 /* eslint-disable */
+
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright Oxide Computer Company
+ */
 
 import type { FetchParams } from "./http-client";
 import { HttpClient, toQueryString } from "./http-client";
@@ -40,11 +38,18 @@ export type Disk = {
 
 export type Disks = { items: Disk[] };
 
+export type DiskController = {
+  id: number;
+  type: "IDE" | "SCSI";
+  model: "LSI" | "PVSCSI";
+};
+
 export type DiskRequest = {
   id: number;
   size: number;
   storageId: string;
   storageName: string;
+  controllerId: number;
 };
 
 export type NetworkRequest = {
@@ -61,6 +66,7 @@ export type CreateVirtualMachineOnHostRequest = {
   name: string;
   cpu: number;
   memory: number;
+  diskControllers: DiskController[];
   disks: DiskRequest[];
   networks: NetworkRequest[];
   hostId: string;

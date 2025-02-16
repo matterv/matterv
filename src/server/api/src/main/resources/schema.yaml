@@ -462,6 +462,10 @@ components:
         memory:
           type: integer
           format: int64
+        diskControllers:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiskController'
         disks:
           type: array
           items:
@@ -492,6 +496,7 @@ components:
         - disks
         - networks
         - osInfo
+        - diskControllers
     CreateVirtualMachineResponse:
       type: object
       properties:
@@ -514,11 +519,14 @@ components:
           type: string
         storageName:
           type: string
+        controllerId:
+          type: integer
       required:
         - size
         - storageId
         - id
         - storageName
+        - controllerId
     NetworkRequest:
       type: object
       properties:
@@ -681,3 +689,19 @@ components:
           $ref: '#/components/schemas/OsType'
       required:
         - osType
+
+    DiskController:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [IDE, SCSI]
+        model:
+          type: string
+          enum: [ LSI, PVSCSI ]
+      required:
+        - id
+        - type
+        - model

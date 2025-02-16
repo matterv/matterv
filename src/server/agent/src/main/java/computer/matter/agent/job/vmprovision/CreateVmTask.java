@@ -7,11 +7,7 @@ import computer.matter.job.Task;
 import computer.matter.job.model.JobDao;
 import computer.matter.json.JsonUtil;
 import computer.matter.network.MacAddressGenerator;
-import computer.matter.vm.VirtualCdrom;
-import computer.matter.vm.VirtualDisk;
-import computer.matter.vm.VirtualDiskControllerType;
-import computer.matter.vm.VirtualMachineStatus;
-import computer.matter.vm.VirtualNic;
+import computer.matter.vm.*;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +32,20 @@ public class CreateVmTask implements Task {
     logger.debug("Start to run CreateVmTask");
     VmProvisionJobConfig jobConfig = jsonUtil.fromJson(job.config, VmProvisionJobConfig.class);
 
+    var diskControllers = jobConfig.requirement.diskControllers.stream().map(diskController -> {
+      var d = new VirtualDiskController();
+      d.type = VirtualDiskControllerType.valueOf(diskController.getType().value());
+      d.model = VirtualDiskControllerModel.valueOf(diskController.getModel().value());
+      d.id = diskController.getId();
+      return d;
+    }).toList();
+
     var virtualDisks = jobConfig.provisionedDisks.stream().map(disk -> {
       var virtualDisk = new VirtualDisk();
       virtualDisk.id = disk.id;
       virtualDisk.file = disk.path;
       virtualDisk.fileType = disk.fileType;
-      virtualDisk.controllerType = VirtualDiskControllerType.IDE;
+      virtualDisk.controllerId = disk.controllerId;
       return virtualDisk;
     }).toList();
 
@@ -56,6 +60,7 @@ public class CreateVmTask implements Task {
 
     jobConfig.vmConfig.osId = jobConfig.requirement.osId;
     jobConfig.vmConfig.devices = new LinkedList<>();
+    jobConfig.vmConfig.devices.addAll(diskControllers);
     jobConfig.vmConfig.devices.addAll(virtualDisks);
     jobConfig.vmConfig.devices.addAll(nics);
 

@@ -18,7 +18,7 @@ class VirtualDiskTest {
     disk.id = 1;
     disk.file = "foo";
     disk.fileType = VirtualDiskFileType.QCOW2;
-    disk.controllerType = VirtualDiskControllerType.IDE;
+    disk.controllerId = 1;
     var js = om.writeValueAsString(disk);
     var d = om.readValue(js, VirtualDevice.class);
     assertEquals(1, d.id);

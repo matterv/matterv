@@ -1,14 +1,12 @@
-/*
- *
- *  * This Source Code Form is subject to the terms of the Mozilla Public
- *  * License, v. 2.0. If a copy of the MPL was not distributed with this
- *  * file, you can obtain one at https://mozilla.org/MPL/2.0/.
- *  *
- *  * Copyright Loma Technology LLC
- *
- */
-
 /* eslint-disable */
+
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, you can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Copyright Oxide Computer Company
+ */
 
 import { z, ZodType } from "zod";
 import { processResponseBody, uniqueItems } from "./util";
@@ -63,6 +61,15 @@ export const Disks = z.preprocess(
   z.object({ items: Disk.array() }),
 );
 
+export const DiskController = z.preprocess(
+  processResponseBody,
+  z.object({
+    id: z.number(),
+    type: z.enum(["IDE", "SCSI"]),
+    model: z.enum(["LSI", "PVSCSI"]),
+  }),
+);
+
 export const DiskRequest = z.preprocess(
   processResponseBody,
   z.object({
@@ -70,6 +77,7 @@ export const DiskRequest = z.preprocess(
     size: z.number(),
     storageId: z.string(),
     storageName: z.string(),
+    controllerId: z.number(),
   }),
 );
 
@@ -94,6 +102,7 @@ export const CreateVirtualMachineOnHostRequest = z.preprocess(
     name: z.string(),
     cpu: z.number(),
     memory: z.number(),
+    diskControllers: DiskController.array(),
     disks: DiskRequest.array(),
     networks: NetworkRequest.array(),
     hostId: z.string(),
