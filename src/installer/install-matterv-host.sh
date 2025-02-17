@@ -144,3 +144,4 @@ else
   install_from_network
 fi
 
+enable_vmware
