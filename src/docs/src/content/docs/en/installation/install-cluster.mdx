@@ -3,42 +3,52 @@ title: Installing MatterV Cluster
 description: How to install MatterV Cluster.
 ---
 
+import { TabItem, Tabs } from "@astrojs/starlight/components";
+
+
 This guide provides step-by-step instructions for installing MatterV Cluster. There are two installation methods available: network installation and offline installation.
 
-## Network Installation (Recommended)
-The network installation method is the simplest way to install MatterV Host. It automatically downloads and installs the latest version.
-* Run the installation command:
+<Tabs>
+  <TabItem label="Network Installation">
+    ### Network Installation (Recommended)
 
-```shell
-curl -fsSL https://github.com/matterv/matterv/releases/download/v0.7.0/install-matterv-cluster.sh | sudo bash -
-```
+    The network installation method is the simplest way to install MatterV Host. It automatically downloads and installs the latest version.
+    * Run the installation command:
 
-* Wait for the installation to complete. The installer will:
-* Download the latest MatterV Cluster package
-* Install required dependencies
-* Configure system settings
-* Start the MatterV Cluster service
+    ```shell
+    curl -fsSL https://github.com/matterv/matterv/releases/download/v0.7.0/install-matterv-cluster.sh | sudo bash -
+    ```
 
-## Offline Installation
-Use this method when the server doesn't have internet access or when you need to install a specific version.
+    * Wait for the installation to complete. The installer will:
+      * Download the latest MatterV Cluster package
+      * Install required dependencies
+      * Configure system settings
+      * Start the MatterV Cluster service
+  </TabItem>
+  <TabItem label="Offline Installation">
+    ### Offline Installation
+    Use this method when the server doesn't have internet access or when you need to install a specific version.
 
-* Download the installation package:
-* On a machine with internet access, visit: [MatterV Cluster Release](https://github.com/matterv/matterv/releases/tag/v0.7.0)
-* Download the MatterV Cluster package (example: matterv-cluster-0.7.0.tar.xz)
+    * Download the installation package:
+      * On a machine with internet access, visit: [MatterV Cluster Release](https://github.com/matterv/matterv/releases/tag/v0.7.0)
+      * Download the MatterV Cluster package (example: matterv-cluster-0.7.0.tar.xz)
 
-* Transfer the package:
+    * Transfer the package:
+      * Copy the downloaded package to your MatterV Cluster server
+      * Ensure you have sufficient permissions in the destination directory
 
-* Copy the downloaded package to your MatterV Cluster server
-* Ensure you have sufficient permissions in the destination directory
+    * Install MatterV Cluster:
+    ```shell
+    # Extract the package
+    tar xzf matterv-cluster-0.7.0.tar.xz
 
-* Install MatterV Cluster:
-```shell
-# Extract the package
-tar xzf matterv-cluster-0.7.0.tar.xz
+    # Run the installer
+    bash ./installer -l matterv-cluster-0.7.0.tar.xz
+    ```
+  </TabItem>
+</Tabs>
 
-# Run the installer
-bash ./installer -l matterv-cluster-0.7.0.tar.xz
-  ```
+
 
 ## Verifying the Installation
 After installation is complete, verify that MatterV Cluster is running properly:
