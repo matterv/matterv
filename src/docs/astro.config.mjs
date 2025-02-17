@@ -46,6 +46,14 @@ export default defineConfig({
           ],
         },
         {
+          label: "Release Notes",
+          items: [
+            {
+              label: "0.7.0", link: "/en/releases/matterv-v070"
+            }
+          ],
+        },
+        {
           label: "Installation",
           items: [
             {
