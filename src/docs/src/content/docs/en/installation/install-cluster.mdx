@@ -10,7 +10,7 @@ The network installation method is the simplest way to install MatterV Host. It 
 * Run the installation command:
 
 ```shell
-curl -fsSL https://github.com/matterv/matterv/releases/download/v0.6.0/install-matterv-cluster.sh | sudo bash -
+curl -fsSL https://github.com/matterv/matterv/releases/download/v0.7.0/install-matterv-cluster.sh | sudo bash -
 ```
 
 * Wait for the installation to complete. The installer will:
@@ -23,21 +23,21 @@ curl -fsSL https://github.com/matterv/matterv/releases/download/v0.6.0/install-m
 Use this method when the server doesn't have internet access or when you need to install a specific version.
 
 * Download the installation package:
-* On a machine with internet access, visit: [MatterV Cluster Release](https://www.matterv.com/release/matterv-cluster/latest)
-* Download the MatterV Cluster package (example: matterv-cluster-0.6.tgz)
+* On a machine with internet access, visit: [MatterV Cluster Release](https://github.com/matterv/matterv/releases/tag/v0.7.0)
+* Download the MatterV Cluster package (example: matterv-cluster-0.7.0.tar.xz)
 
 * Transfer the package:
 
 * Copy the downloaded package to your MatterV Cluster server
 * Ensure you have sufficient permissions in the destination directory
 
-* Install Cluster Host:
+* Install MatterV Cluster:
 ```shell
 # Extract the package
-tar xzf matterv-cluster-0.6.tgz
+tar xzf matterv-cluster-0.7.0.tar.xz
 
 # Run the installer
-bash ./installer -l matterv-cluster-0.6.tgz
+bash ./installer -l matterv-cluster-0.7.0.tar.xz
   ```
 
 ## Verifying the Installation
