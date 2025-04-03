@@ -57,6 +57,7 @@
         <module>cluster</module>
         <module>api</module>
         <module>websocket</module>
+        <module>vmware</module>
 
     </modules>
 </project>

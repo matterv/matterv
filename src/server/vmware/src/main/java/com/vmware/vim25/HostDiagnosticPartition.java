@@ -1,0 +1,139 @@
+
+package com.vmware.vim25;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java class for HostDiagnosticPartition complex type</p>.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.</p>
+ * 
+ * <pre>{@code
+ * <complexType name="HostDiagnosticPartition">
+ *   <complexContent>
+ *     <extension base="{urn:internalvim25}DynamicData">
+ *       <sequence>
+ *         <element name="storageType" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="diagnosticType" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="slots" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         <element name="id" type="{urn:internalvim25}HostScsiDiskPartition"/>
+ *       </sequence>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "HostDiagnosticPartition", propOrder = {
+    "storageType",
+    "diagnosticType",
+    "slots",
+    "id"
+})
+public class HostDiagnosticPartition
+    extends DynamicData
+{
+
+    @XmlElement(required = true)
+    protected String storageType;
+    @XmlElement(required = true)
+    protected String diagnosticType;
+    protected int slots;
+    @XmlElement(required = true)
+    protected HostScsiDiskPartition id;
+
+    /**
+     * Gets the value of the storageType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getStorageType() {
+        return storageType;
+    }
+
+    /**
+     * Sets the value of the storageType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setStorageType(String value) {
+        this.storageType = value;
+    }
+
+    /**
+     * Gets the value of the diagnosticType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDiagnosticType() {
+        return diagnosticType;
+    }
+
+    /**
+     * Sets the value of the diagnosticType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDiagnosticType(String value) {
+        this.diagnosticType = value;
+    }
+
+    /**
+     * Gets the value of the slots property.
+     * 
+     */
+    public int getSlots() {
+        return slots;
+    }
+
+    /**
+     * Sets the value of the slots property.
+     * 
+     */
+    public void setSlots(int value) {
+        this.slots = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link HostScsiDiskPartition }
+     *     
+     */
+    public HostScsiDiskPartition getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link HostScsiDiskPartition }
+     *     
+     */
+    public void setId(HostScsiDiskPartition value) {
+        this.id = value;
+    }
+
+}
