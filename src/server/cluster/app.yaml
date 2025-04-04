@@ -19,6 +19,7 @@ logging:
       timeZone: UTC
 
 webRootDir: "/opt/matterv/cluster/web"
+vcenterPort: 8545
 
 server:
   applicationConnectors:

@@ -8,13 +8,15 @@ import computer.matter.cluster.api.DataCenterApiImpl;
 import computer.matter.cluster.api.StorageApiImpl;
 import computer.matter.cluster.api.VmApiImpl;
 import computer.matter.cluster.db.model.UserDao;
-import computer.matter.vcenter.VcenterServlet;
+import computer.matter.vcenter.VcenterServer;
 import io.dropwizard.core.Application;
+import io.dropwizard.core.server.DefaultServerFactory;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.jdbi3.JdbiFactory;
+import io.dropwizard.jetty.HttpsConnectorFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import jakarta.servlet.DispatcherType;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -64,8 +66,10 @@ public class App extends Application<AppConfig> {
 
   @Override
   public void run(AppConfig configuration, Environment environment) {
-    configureCors(environment);
+    var f = (DefaultServerFactory)configuration.getServerFactory();
+    var c = (HttpsConnectorFactory)f.getApplicationConnectors().getFirst();
 
+    configureCors(environment);
     var factory = new JdbiFactory();
     var jdbi = factory
             .build(environment, configuration.getDataSourceFactory(), "sqlite")
@@ -110,6 +114,7 @@ public class App extends Application<AppConfig> {
             .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
             .addMapping("/index.html", "/assets/*", "/");
 
-    environment.servlets().addServlet("vcenter", new VcenterServlet()).addMapping("/sdk/*");
+    var vcenterServer = new VcenterServer();
+    vcenterServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getVcenterPort());
   }
 }

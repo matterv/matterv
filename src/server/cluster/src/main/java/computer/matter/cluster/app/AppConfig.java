@@ -14,6 +14,17 @@ public class AppConfig extends Configuration {
   @NotNull
   private String webRootDir;
 
+  @Valid
+  private int vcenterPort = 8545;
+
+  public int getVcenterPort() {
+    return vcenterPort;
+  }
+
+  public void setVcenterPort(int vcenterPort) {
+    this.vcenterPort = vcenterPort;
+  }
+
   public @Valid @NotNull String getWebRootDir() {
     return webRootDir;
   }
