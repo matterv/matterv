@@ -8,6 +8,7 @@ import computer.matter.cluster.api.DataCenterApiImpl;
 import computer.matter.cluster.api.StorageApiImpl;
 import computer.matter.cluster.api.VmApiImpl;
 import computer.matter.cluster.db.model.UserDao;
+import computer.matter.vcenter.VcenterServlet;
 import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
@@ -108,5 +109,7 @@ public class App extends Application<AppConfig> {
     environment.servlets()
             .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
             .addMapping("/index.html", "/assets/*", "/");
+
+    environment.servlets().addServlet("vcenter", new VcenterServlet()).addMapping("/sdk/*");
   }
 }

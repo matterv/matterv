@@ -94,6 +94,11 @@
         </dependency>
         <dependency>
             <groupId>computer.matter</groupId>
+            <artifactId>vmware</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>computer.matter</groupId>
             <artifactId>common-test</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
