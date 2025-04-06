@@ -6,7 +6,7 @@ import computer.matter.cluster.db.model.ComputeClusterDao;
 import computer.matter.cluster.db.model.DataCenterDao;
 import computer.matter.cluster.db.model.DiskDao;
 import computer.matter.db.cluster.HostDao;
-import computer.matter.cluster.db.model.NetworkDao;
+import computer.matter.db.cluster.NetworkDao;
 import computer.matter.cluster.db.model.NodeDao;
 import computer.matter.cluster.db.model.NodeHierarchyDao;
 import computer.matter.cluster.db.model.NodeRelationshipDao;

@@ -1,4 +1,4 @@
-package computer.matter.cluster.db.model;
+package computer.matter.db.cluster;
 
 import computer.matter.db.DbBase;
 import computer.matter.network.NetworkType;

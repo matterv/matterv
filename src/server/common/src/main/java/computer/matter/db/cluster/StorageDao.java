@@ -45,6 +45,11 @@ public interface StorageDao {
   List<StorageDo> getInRangeByHostUuid(@Bind("hostId") UUID hostId, @Bind("page") long page, @Bind("limit") int limit,
                                        @Bind("assigned") boolean assigned);
 
+  @SqlQuery("select * from storage where host_uuid = :hostId and assigned = :assigned order by id ")
+  @RegisterFieldMapper(StorageDo.class)
+  List<StorageDo> getAllByHostUuid(@Bind("hostId") UUID hostId,
+                                       @Bind("assigned") boolean assigned);
+
   @SqlQuery("select * from storage where id >= :page and assigned = true order by id limit :limit")
   @RegisterFieldMapper(StorageDo.class)
   List<StorageDo> getAllInRange(@Bind("page") long page, @Bind("limit") int limit);

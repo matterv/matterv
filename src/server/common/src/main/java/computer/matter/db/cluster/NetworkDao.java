@@ -1,4 +1,4 @@
-package computer.matter.cluster.db.model;
+package computer.matter.db.cluster;
 
 import org.jdbi.v3.sqlobject.config.RegisterFieldMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;

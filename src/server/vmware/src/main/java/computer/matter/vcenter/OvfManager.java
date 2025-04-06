@@ -16,31 +16,9 @@ import com.vmware.vim25.VirtualMachineConfigSpec;
 import com.vmware.vim25.VirtualMachineFileInfo;
 import com.vmware.vim25.VirtualMachineImportSpec;
 import com.vmware.vim25.VirtualSCSISharing;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,97 +35,6 @@ public class OvfManager extends ManagedObjectReference {
     type = "OvfManager";
     this.value = value;
     this.managedObjectManager = managedObjectManager;
-  }
-
-  OvfCreateImportSpecResult getOvfCreateImportSpecResult() throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, JAXBException {
-    var rsp = """
-              <soapenv:Envelope xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
-               xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-              <soapenv:Body>
-              <CreateImportSpecResponse xmlns="urn:internalvim25"><returnval><importSpec xsi:type="VirtualMachineImportSpec"><entityConfig><tag>MyVM1</tag></entityConfig><configSpec><name>MyVM1</name><version>vmx-19</version><guestId>windows2019srvNext_64Guest</guestId>
-              <files><vmPathName>[datastore1]</vmPathName></files>
-              <tools><afterPowerOn>true</afterPowerOn><afterResume>true</afterResume><beforeGuestStandby>true</beforeGuestStandby><beforeGuestShutdown>true</beforeGuestShutdown><beforeGuestReboot>true</beforeGuestReboot><toolsUpgradePolicy>manual</toolsUpgradePolicy><syncTimeWithHostAllowed>true</syncTimeWithHostAllowed><syncTimeWithHost>false</syncTimeWithHost></tools>
-              <flags><vvtdEnabled>false</vvtdEnabled><vbsEnabled>false</vbsEnabled></flags>
-              <powerOpInfo><powerOffType>soft</powerOffType>
-              <suspendType>soft</suspendType><resetType>soft</resetType><standbyAction>checkpoint</standbyAction></powerOpInfo><numCPUs>2</numCPUs><numCoresPerSocket>1</numCoresPerSocket><memoryMB>4096</memoryMB><memoryHotAddEnabled>false</memoryHotAddEnabled><cpuHotAddEnabled>false</cpuHotAddEnabled><cpuHotRemoveEnabled>false</cpuHotRemoveEnabled><virtualICH7MPresent>false</virtualICH7MPresent><virtualSMCPresent>false</virtualSMCPresent>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualIDEController"><key>201</key><connectable><startConnected>true</startConnected><allowGuestControl>false</allowGuestControl><connected>true</connected></connectable><busNumber>1</busNumber></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualIDEController"><key>200</key><connectable><startConnected>true</startConnected><allowGuestControl>false</allowGuestControl><connected>true</connected></connectable><busNumber>0</busNumber></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualMachineVideoCard"><key>500</key><connectable><startConnected>false</startConnected><allowGuestControl>false</allowGuestControl><connected>true</connected></connectable><videoRamSizeInKB>16384</videoRamSizeInKB><useAutoDetect>true</useAutoDetect><enable3DSupport>false</enable3DSupport><use3dRenderer>automatic</use3dRenderer><graphicsMemorySizeInKB>262144</graphicsMemorySizeInKB></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualUSBXHCIController"><key>-100</key><slotInfo xsi:type="VirtualDevicePciBusSlotInfo"><pciSlotNumber>224</pciSlotNumber></slotInfo><unitNumber>0</unitNumber><busNumber>0</busNumber></device></deviceChange>
-              <deviceChange><operation>add</operation><fileOperation>create</fileOperation><device xsi:type="VirtualDisk"><key>-102</key><backing xsi:type="VirtualDiskFlatVer2BackingInfo"><fileName></fileName><diskMode>persistent</diskMode><split>false</split><writeThrough>false</writeThrough><thinProvisioned>true</thinProvisioned><eagerlyScrub>false</eagerlyScrub></backing><connectable><startConnected>true</startConnected><allowGuestControl>false</allowGuestControl><connected>true</connected></connectable><controllerKey>-101</controllerKey><unitNumber>0</unitNumber><capacityInKB>20971520</capacityInKB></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="ParaVirtualSCSIController"><key>-101</key><connectable><startConnected>true</startConnected><allowGuestControl>false</allowGuestControl><connected>true</connected></connectable><slotInfo xsi:type="VirtualDevicePciBusSlotInfo"><pciSlotNumber>160</pciSlotNumber></slotInfo><busNumber>0</busNumber><device>-102</device><sharedBus>noSharing</sharedBus></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualCdrom"><key>-104</key><backing xsi:type="VirtualCdromAtapiBackingInfo"><deviceName>CD/DVD drive 0</deviceName></backing><connectable><startConnected>false</startConnected><allowGuestControl>true</allowGuestControl><connected>true</connected></connectable><controllerKey>-103</controllerKey><unitNumber>0</unitNumber></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualAHCIController"><key>-103</key><connectable><startConnected>true</startConnected><allowGuestControl>false</allowGuestControl><connected>true</connected></connectable><slotInfo xsi:type="VirtualDevicePciBusSlotInfo"><pciSlotNumber>32</pciSlotNumber></slotInfo><busNumber>0</busNumber><device>-104</device></device></deviceChange>
-              <deviceChange><operation>add</operation><device xsi:type="VirtualMachineVMCIDevice"><key>12000</key><allowUnrestrictedCommunication>false</allowUnrestrictedCommunication></device></deviceChange><deviceChange><operation>add</operation><device xsi:type="VirtualE1000e"><key>-105</key><backing xsi:type="VirtualEthernetCardNetworkBackingInfo"><deviceName>VM Network</deviceName></backing><connectable><startConnected>true</startConnected><allowGuestControl>true</allowGuestControl><connected>true</connected></connectable><slotInfo xsi:type="VirtualDevicePciBusSlotInfo"><pciSlotNumber>192</pciSlotNumber></slotInfo><addressType>generated</addressType><wakeOnLanEnabled>false</wakeOnLanEnabled></device></deviceChange>
-              <cpuAllocation><shares><shares>2000</shares><level>normal</level></shares></cpuAllocation>
-              <extraConfig><key>nvram</key><value xsi:type="xsd:string">MyVM1.nvram</value></extraConfig><extraConfig><key>svga.autodetect</key><value xsi:type="xsd:string">TRUE</value></extraConfig>
-              <bootOptions><efiSecureBootEnabled>true</efiSecureBootEnabled></bootOptions>
-              <vAppConfig><installBootRequired>false</installBootRequired><installBootStopDelay>0</installBootStopDelay></vAppConfig>
-              <firmware>efi</firmware><nestedHVEnabled>false</nestedHVEnabled>
-              <vPMCEnabled>false</vPMCEnabled></configSpec>
-              </importSpec>
-              <fileItem><deviceId>/MyVM1/ParaVirtualSCSIController0:0</deviceId><path>/4/ParaVirtualSCSIController0:0</path><compressionMethod></compressionMethod><size>-1</size><cimType>17</cimType><create>false</create></fileItem>
-              <fileItem><deviceId>/MyVM1/nvram</deviceId><path>/4/nvram</path><compressionMethod></compressionMethod><size>-1</size><cimType>1</cimType><create>true</create></fileItem>
-              </returnval></CreateImportSpecResponse>
-              </soapenv:Body>
-              </soapenv:Envelope>
-            """;
-    System.setProperty("com.sun.xml.bind.v2.runtime.JAXBContextImpl.fastBoot", "false");
-    System.setProperty("jaxb.debug", "true");
-
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true); // This is important!
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document doc = builder.parse(new InputSource(new StringReader(rsp)));
-
-// Extract the relevant part (OvfCreateImportSpecResult inside returnval)
-    XPath xpath = XPathFactory.newInstance().newXPath();
-    xpath.setNamespaceContext(new NamespaceContext() {
-      @Override
-      public String getNamespaceURI(String prefix) {
-        switch (prefix) {
-          case "soapenv":
-            return "http://schemas.xmlsoap.org/soap/envelope/";
-          case "vim25":
-            return "urn:internalvim25";
-          default:
-            return XMLConstants.NULL_NS_URI;
-        }
-      }
-
-      @Override
-      public String getPrefix(String namespaceURI) {
-        return null;
-      }
-
-      @Override
-      public Iterator<String> getPrefixes(String namespaceURI) {
-        return null;
-      }
-    });
-
-// Extract the returnval element
-    Node returnvalNode = (Node) xpath.evaluate("//vim25:returnval", doc, XPathConstants.NODE);
-
-// Now unmarshal just this node
-    JAXBContext jaxbContext = JAXBContext.newInstance(OvfCreateImportSpecResult.class,
-            VirtualMachineImportSpec.class,
-            OvfFileItem.class);
-    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-    // Enable debugging
-    unmarshaller.setEventHandler(event -> {
-      System.out.println("Event: " + event.getMessage());
-      return true;
-    });
-
-// Unmarshal the returnval node
-    JAXBElement<OvfCreateImportSpecResult> element = unmarshaller.unmarshal(
-            new DOMSource(returnvalNode), OvfCreateImportSpecResult.class);
-    OvfCreateImportSpecResult result = element.getValue();
-    return result;
   }
 
   public OvfCreateImportSpecResult createImportSpec(String ovfDescriptor, ManagedObjectReference resourcePool, ManagedObjectReference datastoreMo, OvfCreateImportSpecParams cisp) {
@@ -254,22 +141,7 @@ public class OvfManager extends ManagedObjectReference {
 
       result.setImportSpec(importSpec);
 
-//        var fileItem2 = new OvfFileItem();
-//        fileItem2.setDeviceId("/" + cisp.getEntityName() + "/nvram");
-//        var nvram = ovf.getReferences().getFiles().stream().filter(f -> f.getId().equalsIgnoreCase("file2")).findFirst().get();
-//
-//        fileItem2.setPath(nvram.getHref());
-//        fileItem2.setCompressionMethod("");
-//        fileItem2.setSize(0L);
-//        fileItem2.setCimType(1);
-//        fileItem2.setCreate(true);
-//        result.getFileItem().add(fileItem2);
       return result;
-
-//        logger.debug("start createImportSpec");
-//        var r = getOvfCreateImportSpecResult();
-//        logger.debug("end createImportSpec");
-//        return r;
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

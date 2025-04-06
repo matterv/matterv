@@ -2,14 +2,12 @@ package computer.matter.vcenter;
 
 import com.vmware.vim25.ManagedObjectReference;
 import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.StorageDao;
 import org.jdbi.v3.core.Jdbi;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class Host extends ManagedObjectReference {
-  public List<DataStore> datastores = new LinkedList<>();
-  public List<Network> networks = new LinkedList<>();
   private long hostId;
   private Jdbi jdbi;
 
@@ -24,6 +22,18 @@ public class Host extends ManagedObjectReference {
     var hostDao = jdbi.onDemand(HostDao.class);
     var host = hostDao.findById(hostId);
     return host.ipAddress.ip();
+  }
+
+  public List<DataStore> getDatastores() {
+    var hostDao = jdbi.onDemand(HostDao.class);
+    var host = hostDao.findById(hostId);
+    var storageDao = jdbi.onDemand(StorageDao.class);
+    var storages = storageDao.getAllByHostUuid(host.uuid, true);
+    return storages.stream().map(storageDo -> new DataStore("storage-" + storageDo.id, jdbi)).toList();
+  }
+
+  public List<Network> getNetworks() {
+    return List.of(new Network("VM Network", "network-1"));
   }
 
   public static ManagedObjectReference create(long dbId) {

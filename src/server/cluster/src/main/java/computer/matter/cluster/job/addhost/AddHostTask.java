@@ -2,8 +2,8 @@ package computer.matter.cluster.job.addhost;
 
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.HostDo;
-import computer.matter.cluster.db.model.NetworkDao;
-import computer.matter.cluster.db.model.NetworkDo;
+import computer.matter.db.cluster.NetworkDao;
+import computer.matter.db.cluster.NetworkDo;
 import computer.matter.db.cluster.StorageDao;
 import computer.matter.db.cluster.StorageDo;
 import computer.matter.cluster.job.hostrefresh.HostRefreshJobConfig;

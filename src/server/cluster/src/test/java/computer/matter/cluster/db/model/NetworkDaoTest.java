@@ -1,6 +1,8 @@
 package computer.matter.cluster.db.model;
 
 import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.db.cluster.NetworkDao;
+import computer.matter.db.cluster.NetworkDo;
 import computer.matter.network.NetworkType;
 import computer.matter.os.IpAddress;
 import computer.matter.os.IpAddressType;
@@ -10,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class NetworkDaoTest extends ClusterDbTestBase {
 

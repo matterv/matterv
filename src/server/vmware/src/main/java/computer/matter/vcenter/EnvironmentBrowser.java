@@ -36,7 +36,7 @@ public class EnvironmentBrowser extends ManagedObjectReference {
     var clockInfo = new VirtualMachinePrecisionClockInfo();
     clockInfo.setName("");
     configTarget.getPrecisionClockInfo().add(clockInfo);
-    h.datastores.forEach(hh -> {
+    h.getDatastores().forEach(hh -> {
       var summary = hh.getSummary();
       var datastoreInfo = new VirtualMachineDatastoreInfo();
       datastoreInfo.setName(summary.getName());
@@ -50,7 +50,7 @@ public class EnvironmentBrowser extends ManagedObjectReference {
       configTarget.getDatastore().add(datastoreInfo);
     });
 
-    h.networks.forEach(network -> {
+    h.getNetworks().forEach(network -> {
       var networkInfo = new VirtualMachineNetworkInfo();
       networkInfo.setNetwork(network.getSummary());
       networkInfo.setVswitch("vSwitch0");
