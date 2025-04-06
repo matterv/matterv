@@ -2,8 +2,8 @@ package computer.matter.cluster.api;
 
 import computer.matter.cluster.db.model.DiskDao;
 import computer.matter.cluster.db.model.DiskDo;
-import computer.matter.cluster.db.model.VirtualMachineDao;
-import computer.matter.cluster.db.model.VirtualMachineDo;
+import computer.matter.db.cluster.VirtualMachineDao;
+import computer.matter.db.cluster.VirtualMachineDo;
 import computer.matter.cluster.job.createVm.CreateVmJobConfig;
 import computer.matter.cluster.job.createVm.CreateVmRunner;
 import computer.matter.cluster.job.vmops.VmOpsJobConfig;

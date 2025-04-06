@@ -1,6 +1,5 @@
-package computer.matter.cluster.db.model;
+package computer.matter.db.cluster;
 
-import computer.matter.cluster.model.Vnc;
 import computer.matter.db.DbBase;
 import computer.matter.os.IpAddress;
 import computer.matter.vm.VirtualMachineConfig;
@@ -33,7 +32,7 @@ public class VirtualMachineDo extends DbBase {
   public List<IpAddress> ipAddresses = new LinkedList<>();
   @Json
   public VirtualMachineConfig config;
-  @Json
-  public Vnc vnc;
+
+  public String vnc;
   public int osId;
 }

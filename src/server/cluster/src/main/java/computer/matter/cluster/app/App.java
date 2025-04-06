@@ -114,7 +114,7 @@ public class App extends Application<AppConfig> {
             .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
             .addMapping("/index.html", "/assets/*", "/");
 
-    var vcenterServer = new VcenterServer();
+    var vcenterServer = new VcenterServer(jdbi);
     vcenterServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getVcenterPort());
   }
 }

@@ -2,6 +2,8 @@ package computer.matter.cluster.db.model;
 
 import computer.matter.cluster.common.ClusterDbTestBase;
 import computer.matter.cluster.model.StorageStatus;
+import computer.matter.db.cluster.StorageDao;
+import computer.matter.db.cluster.StorageDo;
 import computer.matter.storage.StorageType;
 import org.junit.jupiter.api.Test;
 

@@ -37,8 +37,9 @@ public class EnvironmentBrowser extends ManagedObjectReference {
     clockInfo.setName("");
     configTarget.getPrecisionClockInfo().add(clockInfo);
     h.datastores.forEach(hh -> {
+      var summary = hh.getSummary();
       var datastoreInfo = new VirtualMachineDatastoreInfo();
-      datastoreInfo.setName(hh.name);
+      datastoreInfo.setName(summary.getName());
       datastoreInfo.setDatastore(hh.getSummary());
       datastoreInfo.setCapability(hh.getCapability());
       datastoreInfo.setMaxFileSize(70368744177664L);

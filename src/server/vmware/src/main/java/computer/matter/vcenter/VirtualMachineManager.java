@@ -20,7 +20,7 @@ public class VirtualMachineManager {
     var task = new CreateVmTask("haTask-ha-folder-vm-vim.Folder.createVm-62808", vm);
     vm.recentTasks.add(task);
     managedObjectManager.add(task);
-    vmFolder.childEntity.add(vm);
+    vmFolder.setChildEntity(vm);
     return vm;
   }
 }

@@ -1,11 +1,11 @@
 package computer.matter.cluster.job.addhost;
 
-import computer.matter.cluster.db.model.HostDao;
-import computer.matter.cluster.db.model.HostDo;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.HostDo;
 import computer.matter.cluster.db.model.NetworkDao;
 import computer.matter.cluster.db.model.NetworkDo;
-import computer.matter.cluster.db.model.StorageDao;
-import computer.matter.cluster.db.model.StorageDo;
+import computer.matter.db.cluster.StorageDao;
+import computer.matter.db.cluster.StorageDo;
 import computer.matter.cluster.job.hostrefresh.HostRefreshJobConfig;
 import computer.matter.cluster.job.hostrefresh.HostRefreshRunner;
 import computer.matter.cluster.model.StorageStatus;
@@ -20,7 +20,6 @@ import computer.matter.job.JobClient;
 import computer.matter.job.Task;
 import computer.matter.json.JsonUtil;
 import computer.matter.network.NetworkType;
-import computer.matter.os.IpAddress;
 import computer.matter.storage.StorageType;
 import computer.matterv.host.client.ApiClientProvider;
 import computer.matterv.host.client.JobUtils;
@@ -30,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.UUID;
 
 public class AddHostTask implements Task {
@@ -64,7 +62,7 @@ public class AddHostTask implements Task {
     }
     storageDo.storageType = StorageType.valueOf(s.getStorageType().name());
     storageDo.url = s.getMountPoint();
-    storageDo.status = StorageStatus.READY;
+    storageDo.status = computer.matter.storage.StorageStatus.valueOf(StorageStatus.READY.name());
     storageDo.id = storageDao.insert(storageDo);
   }
 

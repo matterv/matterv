@@ -8,24 +8,32 @@ import com.vmware.vim25.HostScsiDiskPartition;
 import com.vmware.vim25.HostVmfsVolume;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.VmfsDatastoreInfo;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.StorageDao;
+import computer.matter.db.cluster.StorageDo;
+import org.jdbi.v3.core.Jdbi;
 
 import java.util.List;
 
 public class DataStore extends ManagedObjectReference {
-  public Host _host;
-  public String name;
   public ManagedObjectReference parent;
+  private long dbId;
+  private Jdbi jdbi;
 
-  public DataStore(String name, String id, Host host) {
-    this.name = name;
-    this._host = host;
+  public DataStore(String id, Jdbi jdbi) {
     setValue(id);
     setType(ManagedObjectType.Datastore.name());
+    dbId = Long.parseLong(id.split("-")[1]);
+    this.jdbi = jdbi;
   }
 
   public List<DatastoreHostMount> getHost() {
+    var storageDao = jdbi.onDemand(StorageDao.class);
+    var hostDao = jdbi.onDemand(HostDao.class);
+    var storage = storageDao.findById(dbId);
+    var host = hostDao.findByUuid(storage.hostUuid);
     var hostMount = new DatastoreHostMount();
-    hostMount.setKey(_host);
+    hostMount.setKey(Host.create(host.id));
     var mountInfo = new HostMountInfo();
     mountInfo.setPath("/vmfs/volumes/" + getValue());
     mountInfo.setAccessMode("readWrite");
@@ -36,9 +44,12 @@ public class DataStore extends ManagedObjectReference {
   }
 
   public DatastoreSummary getSummary() {
+    var storageDao = jdbi.onDemand(StorageDao.class);
+    var storage = storageDao.findById(dbId);
+
     var summary = new DatastoreSummary();
     summary.setDatastore(this);
-    summary.setName(name);
+    summary.setName(storage.name);
     summary.setUrl("/vmfs/volumes/" + getValue());
     summary.setCapacity(3863323082752L);
     summary.setFreeSpace(698096812032L);
@@ -66,8 +77,10 @@ public class DataStore extends ManagedObjectReference {
   }
 
   public VmfsDatastoreInfo getInfo() {
+    var storageDao = jdbi.onDemand(StorageDao.class);
+    var storage = storageDao.findById(dbId);
     var info = new VmfsDatastoreInfo();
-    info.setName(name);
+    info.setName(storage.name);
     info.setUrl("/vmfs/volumes/" + getValue());
     info.setFreeSpace(698096812032L);
     info.setMaxFileSize(70368744177664L);
@@ -77,7 +90,7 @@ public class DataStore extends ManagedObjectReference {
     info.setMaxVirtualRDMFileSize(68169720922112L);
     var vmfs = new HostVmfsVolume();
     vmfs.setType("VMFS");
-    vmfs.setName(name);
+    vmfs.setName(storage.name);
     vmfs.setCapacity(3863323082752L);
     vmfs.setBlockSizeMb(1);
     vmfs.setBlockSize(1024);

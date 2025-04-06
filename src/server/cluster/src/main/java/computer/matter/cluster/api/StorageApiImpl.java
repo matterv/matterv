@@ -1,9 +1,9 @@
 package computer.matter.cluster.api;
 
-import computer.matter.cluster.db.model.HostDao;
-import computer.matter.cluster.db.model.HostDo;
-import computer.matter.cluster.db.model.StorageDao;
-import computer.matter.cluster.db.model.StorageDo;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.HostDo;
+import computer.matter.db.cluster.StorageDao;
+import computer.matter.db.cluster.StorageDo;
 import computer.matter.cluster.model.CreateFileReq;
 import computer.matter.cluster.model.ListFilesResponse;
 import computer.matter.cluster.model.ModelFile;
@@ -30,7 +30,7 @@ public class StorageApiImpl implements StorageApi {
     this.jdbi = jdbi;
   }
 
-  private Storage from(computer.matter.cluster.db.model.StorageDo storageDo) {
+  private Storage from(StorageDo storageDo) {
     var storage = new Storage();
     storage.setStorageType(StorageType.fromString(storageDo.storageType.name()));
     storage.setName(storageDo.name);

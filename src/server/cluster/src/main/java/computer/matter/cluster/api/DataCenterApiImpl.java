@@ -2,14 +2,14 @@ package computer.matter.cluster.api;
 
 import computer.matter.cluster.db.model.ComputeClusterDao;
 import computer.matter.cluster.db.model.DataCenterDao;
-import computer.matter.cluster.db.model.HostDao;
-import computer.matter.cluster.db.model.HostDo;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.HostDo;
 import computer.matter.cluster.db.model.NetworkDao;
 import computer.matter.cluster.db.model.NetworkDo;
 import computer.matter.cluster.db.model.NodeHierarchyDao;
-import computer.matter.cluster.db.model.StorageDao;
-import computer.matter.cluster.db.model.StorageDo;
-import computer.matter.cluster.db.model.VirtualMachineDao;
+import computer.matter.db.cluster.StorageDao;
+import computer.matter.db.cluster.StorageDo;
+import computer.matter.db.cluster.VirtualMachineDao;
 import computer.matter.cluster.job.addhost.AddHostJobConfig;
 import computer.matter.cluster.job.addhost.AddHostRunner;
 import computer.matter.cluster.job.hostrefresh.HostRefreshJobConfig;
@@ -129,7 +129,7 @@ public class DataCenterApiImpl implements DatacenterApi {
         storageDo.storageType = computer.matter.storage.StorageType.LOCAL;
         storageDo.assigned = true;
         storageDo.uuid = UUID.randomUUID();
-        storageDo.status = StorageStatus.READY;
+        storageDo.status = computer.matter.storage.StorageStatus.valueOf(StorageStatus.READY.name());
         storageDo.url = storage.getMountPoint();
         storageDao.insert(storageDo);
         return fromStorage(storageDo);

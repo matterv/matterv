@@ -150,13 +150,13 @@ public class OvfManager extends ManagedObjectReference {
     return result;
   }
 
-  public OvfCreateImportSpecResult createImportSpec(String ovfDescriptor, ManagedObjectReference resourcePool, ManagedObjectReference datastore, OvfCreateImportSpecParams cisp) {
+  public OvfCreateImportSpecResult createImportSpec(String ovfDescriptor, ManagedObjectReference resourcePool, ManagedObjectReference datastoreMo, OvfCreateImportSpecParams cisp) {
     try {
       Map<String, Integer> instanceIdToDeviceKeyMap = new HashMap<>();
       Map<String, DiskInfo> diskInfoMap = new HashMap<>();
       AtomicInteger deviceKey = new AtomicInteger(-101);
       OvfDescriptor.Envelope ovf = JaxbHelper.unmarshal(ovfDescriptor, List.of(OvfDescriptor.Envelope.class));
-      var dataStore = (DataStore) managedObjectManager.get(datastore);
+      var dataStore = (DataStore) managedObjectManager.get(datastoreMo);
 
       var result = new OvfCreateImportSpecResult();
       var importSpec = new VirtualMachineImportSpec();
@@ -169,7 +169,8 @@ public class OvfManager extends ManagedObjectReference {
       configSpec.setGuestId(ovf.getVirtualSystem().getOperatingSystemSection().getOsType());
 
       var fileInfo = new VirtualMachineFileInfo();
-      fileInfo.setVmPathName("[" + dataStore.name + "]");
+      var dsSummary = dataStore.getSummary();
+      fileInfo.setVmPathName("[" + dsSummary.getName() + "]");
       configSpec.setFiles(fileInfo);
 
       ovf.getDiskSection().getDisks().forEach(disk -> {

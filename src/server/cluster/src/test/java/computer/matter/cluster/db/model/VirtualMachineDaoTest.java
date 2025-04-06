@@ -1,7 +1,8 @@
 package computer.matter.cluster.db.model;
 
 import computer.matter.cluster.common.ClusterDbTestBase;
-import computer.matter.cluster.model.Vnc;
+import computer.matter.db.cluster.VirtualMachineDao;
+import computer.matter.db.cluster.VirtualMachineDo;
 import computer.matter.vm.VirtualMachineConfig;
 import computer.matter.vm.VirtualMachineStatus;
 import org.junit.jupiter.api.Test;
@@ -27,9 +28,6 @@ class VirtualMachineDaoTest extends ClusterDbTestBase {
     var config = new VirtualMachineConfig();
     config.memoryInMB = 2;
     vm.config = config;
-    var vnc = new Vnc();
-    vnc.setHost("192.168.1.1");
-    vm.vnc = vnc;
     var vmDao = jdbi.onDemand(VirtualMachineDao.class);
     vm.id = vmDao.insert(vm);
     var vm2 = vmDao.findByUuid(vm.uuid);
@@ -44,8 +42,6 @@ class VirtualMachineDaoTest extends ClusterDbTestBase {
     vm.status = VirtualMachineStatus.STOPPED;
     config.cpu = 1;
     vm.config = config;
-    vnc.setHost("192.168.1.2");
-    vm.vnc = vnc;
     vm.isDeleted = true;
     vm.isGCed = true;
     vmDao.update(vm);

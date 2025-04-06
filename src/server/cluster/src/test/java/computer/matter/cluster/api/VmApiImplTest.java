@@ -1,6 +1,6 @@
 package computer.matter.cluster.api;
 
-import computer.matter.cluster.db.model.VirtualMachineDao;
+import computer.matter.db.cluster.VirtualMachineDao;
 import computer.matter.cluster.model.CreateVirtualMachineOnHostRequest;
 import computer.matter.cluster.model.DiskRequest;
 import computer.matter.host.ApiException;

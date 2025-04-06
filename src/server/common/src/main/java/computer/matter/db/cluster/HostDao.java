@@ -1,4 +1,4 @@
-package computer.matter.cluster.db.model;
+package computer.matter.db.cluster;
 
 import org.jdbi.v3.sqlobject.config.RegisterFieldMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -35,12 +35,7 @@ public interface HostDao {
   @RegisterFieldMapper(HostDo.class)
   HostDo findByUuid(@Bind("host_uuid") UUID hostUuid);
 
-  default List<HostDo> getAllByComputeClusterUuid(NodeHierarchyDao descendentsDao, UUID ccUuid) {
-    var hostUuids = descendentsDao.getDescendants(ccUuid, 1, NodeDo.NodeType.HOST).stream()
-            .map(descendentDo -> descendentDo.uuid).toList();
-    if (hostUuids.isEmpty()) {
-      return List.of();
-    }
-    return findByUuids(hostUuids);
-  }
+  @SqlQuery("select * from host where id = :id")
+  @RegisterFieldMapper(HostDo.class)
+  HostDo findById(@Bind("id") long id);
 }

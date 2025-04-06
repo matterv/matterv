@@ -1,9 +1,9 @@
 package computer.matter.cluster.job.vmops;
 
 import computer.matter.cluster.common.vm.VirtualMachines;
-import computer.matter.cluster.db.model.HostDao;
-import computer.matter.cluster.db.model.VirtualMachineDao;
-import computer.matter.cluster.db.model.VirtualMachineDo;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.VirtualMachineDao;
+import computer.matter.db.cluster.VirtualMachineDo;
 import computer.matter.host.ApiException;
 import computer.matter.host.client.VmApi;
 import computer.matter.job.Job;

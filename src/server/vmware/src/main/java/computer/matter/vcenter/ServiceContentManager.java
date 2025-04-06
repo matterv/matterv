@@ -3,6 +3,9 @@ package computer.matter.vcenter;
 import com.vmware.vim25.AboutInfo;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.ServiceContent;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.StorageDao;
+import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +14,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,9 +27,19 @@ public class ServiceContentManager {
 
   Folder rootFolder;
   ManagedObjectManager moManager;
+  private Jdbi jdbi;
+  private HostDao hostDao;
+  private StorageDao storageDao;
+  private Map<String, Class<?>> moTypeToClass = new HashMap<>();
 
-  public ServiceContentManager() {
+  public ServiceContentManager(Jdbi jdbi) {
+    this.jdbi = jdbi;
+    this.hostDao = jdbi.onDemand(HostDao.class);
+    this.storageDao = jdbi.onDemand(StorageDao.class);
     buildHierarchy();
+
+
+
   }
 
   SessionManager getSessionManager() {
@@ -34,22 +48,18 @@ public class ServiceContentManager {
 
 
   public void buildHierarchy() {
-    moManager = new ManagedObjectManager();
+    moManager = new ManagedObjectManager(jdbi);
     var vmManager = new VirtualMachineManager(moManager);
     var leaseManager = new HttpNfcLeaseManager(moManager);
     var resourcePool = new ResourcePool("Resources", "resgroup-9", leaseManager, vmManager);
     var network = new Network("VM Network", "HaNetwork-VM Network");
-    var host = new Host("192.168.1.2", "host-14");
     var vmFolder = new Folder("vm", "ha-folder-vm", new ArrayList<>());
     vmManager.vmFolder = vmFolder;
     var env = new EnvironmentBrowser("env1", "ha-env-browser-vmx-19", moManager);
 
-    var clusterComputeResource = new ClusterComputeResource("Cluster1", "domain-c8", resourcePool, List.of(host), env);
+    var clusterComputeResource = new ClusterComputeResource(jdbi, hostDao, "Cluster1", "domain-c8", resourcePool, env);
     var hostFolder = new Folder("host", "group-h5", List.of(clusterComputeResource));
-    var dataStore = new DataStore("datastore1", UUID.randomUUID().toString(), host);
-    host.datastores.add(dataStore);
-    host.networks.add(network);
-    var dataStoreFolder = new Folder("datastore", "ha-folder-datastore", List.of(dataStore));
+    var dataStoreFolder = new DataStoreFolder("datastore", "ha-folder-datastore", storageDao);
     var datacenter = new Datacenter("Datacenter", "datacenter-3", hostFolder, dataStoreFolder, vmFolder);
     rootFolder = new Folder("group-d1", "group-d1", List.of(datacenter));
 
@@ -58,10 +68,8 @@ public class ServiceContentManager {
 
     moManager.add(resourcePool);
     moManager.add(network);
-    moManager.add(host);
     moManager.add(vmFolder);
     moManager.add(env);
-    moManager.add(dataStore);
     moManager.add(dataStoreFolder);
     moManager.add(datacenter);
     moManager.add(rootFolder);
@@ -79,8 +87,10 @@ public class ServiceContentManager {
 
     var m = moManager.get(mo);
     if (m == null) {
-      logger.error("Mo not found: " + mo);
-      throw new RuntimeException("Mo not found: " + mo);
+
+        logger.error("Mo not found: " + mo);
+        throw new RuntimeException("Mo not found: " + mo);
+
     }
     var o = ReflectionUtil.getValue(m, prop);
     return o;

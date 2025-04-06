@@ -1,6 +1,8 @@
 package computer.matter.cluster.db.model;
 
 import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.db.cluster.HostDao;
+import computer.matter.db.cluster.HostDo;
 import computer.matter.os.IpAddress;
 import computer.matter.os.IpAddressType;
 import org.junit.jupiter.api.Test;

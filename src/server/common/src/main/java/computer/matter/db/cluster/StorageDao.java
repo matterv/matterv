@@ -1,6 +1,6 @@
-package computer.matter.cluster.db.model;
+package computer.matter.db.cluster;
 
-import computer.matter.cluster.model.StorageType;
+import computer.matter.storage.StorageType;
 import org.jdbi.v3.sqlobject.config.RegisterFieldMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindFields;
@@ -31,6 +31,10 @@ public interface StorageDao {
   @SqlQuery("select * from storage where uuid = :uuid")
   @RegisterFieldMapper(StorageDo.class)
   StorageDo findByUUID(@Bind("uuid") String uuid);
+
+  @SqlQuery("select * from storage where id = :id")
+  @RegisterFieldMapper(StorageDo.class)
+  StorageDo findById(@Bind("id") long id);
 
   @SqlQuery("select * from storage where uuid in (<uuids>) and assigned = :assigned")
   @RegisterFieldMapper(StorageDo.class)

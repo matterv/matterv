@@ -1,7 +1,7 @@
 package computer.matter.cluster.common.vm;
 
-import computer.matter.cluster.db.model.VirtualMachineDao;
-import computer.matter.cluster.db.model.VirtualMachineDo;
+import computer.matter.db.cluster.VirtualMachineDao;
+import computer.matter.db.cluster.VirtualMachineDo;
 import computer.matter.host.client.model.VirtualMachine;
 import computer.matter.json.JsonUtil;
 import computer.matter.os.IpAddress;

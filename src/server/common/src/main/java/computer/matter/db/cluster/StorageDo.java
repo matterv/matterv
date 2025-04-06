@@ -1,7 +1,7 @@
-package computer.matter.cluster.db.model;
+package computer.matter.db.cluster;
 
-import computer.matter.cluster.model.StorageStatus;
 import computer.matter.db.DbBase;
+import computer.matter.storage.StorageStatus;
 import computer.matter.storage.StorageType;
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
 
