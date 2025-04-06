@@ -25,7 +25,7 @@ public class CreateVmTask extends Task {
     taskInfo.setDescriptionId("Folder.createVm");
 
     taskInfo.setEntity(vm);
-    taskInfo.setEntityName(vm.name);
+    taskInfo.setEntityName(vm.getName());
     taskInfo.setState(TaskInfoState.SUCCESS);
     taskInfo.setCancelable(false);
     taskInfo.setCancelled(false);

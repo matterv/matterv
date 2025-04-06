@@ -30,6 +30,14 @@ public interface VirtualMachineDao {
   @RegisterFieldMapper(VirtualMachineDo.class)
   VirtualMachineDo findByUuid(@Bind("uuid") UUID uuid);
 
+  @SqlQuery("select * from virtual_machine where name = :name")
+  @RegisterFieldMapper(VirtualMachineDo.class)
+  VirtualMachineDo findByName(@Bind("name") String name);
+
+  @SqlQuery("select * from virtual_machine where id = :id")
+  @RegisterFieldMapper(VirtualMachineDo.class)
+  VirtualMachineDo findById(@Bind("id") long id);
+
   @SqlQuery("select * from virtual_machine where host_uuid = :hostUuid and is_deleted = false and id >= :page order by id limit :limit")
   @RegisterFieldMapper(VirtualMachineDo.class)
   List<VirtualMachineDo> getInRangeByHostUuid(@Bind("hostUuid") UUID hostUuid, @Bind("page") long page,

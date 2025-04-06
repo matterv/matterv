@@ -16,4 +16,5 @@ public enum ManagedObjectType {
   PropertyFilter,
   Task,
   ClusterComputeResource,
+  VmFolder,
 }

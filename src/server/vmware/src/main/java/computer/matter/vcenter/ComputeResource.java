@@ -8,11 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ComputeResource extends ManagedObjectReference {
+public class ComputeResource extends ManagedObjectReference implements ParentNode {
   public String name;
   public ResourcePool resourcePool;
   public ManagedObjectReference parent;
-  public Map<String, ManagedObjectReference> nameMap = new HashMap<>();
   public EnvironmentBrowser environmentBrowser;
   private HostDao hostDao;
   private Jdbi jdbi;
@@ -23,7 +22,7 @@ public class ComputeResource extends ManagedObjectReference {
     this.resourcePool = resourcePool;
     this.environmentBrowser = environmentBrowser;
     resourcePool.owner = this;
-    nameMap.put(resourcePool.name, resourcePool);
+    children.put(resourcePool.name, resourcePool);
     setType(ManagedObjectType.ComputeResource.name());
     setValue(value);
   }

@@ -12,12 +12,10 @@ import org.slf4j.LoggerFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class ServiceContentManager {
@@ -53,13 +51,15 @@ public class ServiceContentManager {
     var leaseManager = new HttpNfcLeaseManager(moManager);
     var resourcePool = new ResourcePool("Resources", "resgroup-9", leaseManager, vmManager);
     var network = new Network("VM Network", "HaNetwork-VM Network");
-    var vmFolder = new Folder("vm", "ha-folder-vm", new ArrayList<>());
+
+    var discoveredVmFolder = new VmFolder("Discovered virtual machine",  jdbi);
+    var vmFolder = new RootVmFolder("vm", "folder-vm", List.of(discoveredVmFolder));
     vmManager.vmFolder = vmFolder;
     var env = new EnvironmentBrowser("env1", "ha-env-browser-vmx-19", moManager);
 
     var clusterComputeResource = new ClusterComputeResource(jdbi, hostDao, "Cluster1", "domain-c8", resourcePool, env);
     var hostFolder = new Folder("host", "group-h5", List.of(clusterComputeResource));
-    var dataStoreFolder = new DataStoreFolder("datastore", "ha-folder-datastore", storageDao);
+    var dataStoreFolder = new DataStoreFolder("datastore", "folder-datastore", storageDao);
     var datacenter = new Datacenter("Datacenter", "datacenter-3", hostFolder, dataStoreFolder, vmFolder);
     rootFolder = new Folder("group-d1", "group-d1", List.of(datacenter));
 
@@ -77,6 +77,7 @@ public class ServiceContentManager {
     moManager.add(propertyCollector);
     moManager.add(hostFolder);
     moManager.add(clusterComputeResource);
+    moManager.add(discoveredVmFolder);
   }
 
 
@@ -392,13 +393,12 @@ public class ServiceContentManager {
   public ManagedObjectReference findByInventoryPath(String inventoryPath) {
     var paths = inventoryPath.split("/");
     int i = 1;
-    ManagedObjectReference r = rootFolder;
+    ParentNode r = rootFolder;
     while (i < paths.length) {
-      var map = (Map<String, ManagedObjectReference>) ReflectionUtil.getValue(r, "nameMap");
-      r = map.get(paths[i]);
+      r = (ParentNode) r.child(paths[i]);
       i += 1;
     }
-    return r;
+    return (ManagedObjectReference) r;
   }
 
   public Object invoke(ManagedObjectReference mo, String method, Object... args) {

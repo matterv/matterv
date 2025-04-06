@@ -16,6 +16,7 @@ public class ManagedObjectManager {
     moTypeToClass.put(ManagedObjectType.Datastore.name(), DataStore.class);
     moTypeToClass.put(ManagedObjectType.VirtualMachine.name(), VirtualMachine.class);
     moTypeToClass.put(ManagedObjectType.HostSystem.name(), Host.class);
+    moTypeToClass.put(ManagedObjectType.VmFolder.name(), VmFolder.class);
     this.jdbi = jdbi;
   }
 
@@ -29,9 +30,12 @@ public class ManagedObjectManager {
     var moType = mor.getType();
     if (mor.getType().equals("ManagedEntity")) {
       var type = mor.getValue().split("-")[0];
+
       moType =
               switch (type) {
                 case "host" -> ManagedObjectType.HostSystem.name();
+                case VmFolder.vmFolderId -> ManagedObjectType.VmFolder.name();
+                case "vm" -> ManagedObjectType.VirtualMachine.name();
                 default -> "";
               };
     }

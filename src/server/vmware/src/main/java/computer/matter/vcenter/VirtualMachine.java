@@ -4,6 +4,8 @@ import com.vmware.vim25.ArrayOfManagedObjectReference;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.VirtualDisk;
 import com.vmware.vim25.VirtualMachineConfigSpec;
+import computer.matter.db.cluster.VirtualMachineDao;
+import org.jdbi.v3.core.Jdbi;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,17 +18,29 @@ record Disk(String key, String importKey, String path) {
 }
 
 public class VirtualMachine extends ManagedObjectReference {
-  public String name;
   public ManagedObjectReference parent;
   List<Task> recentTasks = new ArrayList<>();
-  private final VirtualMachineConfigSpec config;
+  private VirtualMachineConfigSpec config;
+  private Jdbi jdbi;
+  private long dbId;
 
+  public VirtualMachine(String value, Jdbi jdbi) {
+    setType(ManagedObjectType.VirtualMachine.name());
+    setValue(value);
+    this.jdbi = jdbi;
+    this.dbId = Long.parseLong(value.split("-")[1]);
+  }
 
   public VirtualMachine(VirtualMachineConfigSpec config, String value) {
-    this.name = config.getName();
     this.config = config;
     setType(ManagedObjectType.VirtualMachine.name());
     setValue(value);
+  }
+
+  public String getName() {
+    var vmDao = jdbi.onDemand(VirtualMachineDao.class);
+    var vm = vmDao.findById(dbId);
+    return vm.name;
   }
 
   public ArrayOfManagedObjectReference getRecentTask() {
@@ -38,6 +52,7 @@ public class VirtualMachine extends ManagedObjectReference {
   }
 
   public List<Disk> getDisks() {
+    var name = getName();
     var controllerToDisksMap = config.getDeviceChange().stream()
             .filter(virtualDeviceConfigSpec -> virtualDeviceConfigSpec.getDevice() instanceof VirtualDisk)
             .map(d -> (VirtualDisk) d.getDevice())
