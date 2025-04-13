@@ -5,6 +5,7 @@ import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.VirtualDisk;
 import com.vmware.vim25.VirtualMachineConfigSpec;
 import computer.matter.db.cluster.VirtualMachineDao;
+import computer.matter.vm.VirtualMachineStatus;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.ArrayList;
@@ -49,6 +50,12 @@ public class VirtualMachine extends ManagedObjectReference {
       r.getManagedObjectReference().add(t);
     }
     return r;
+  }
+
+  public VirtualMachineStatus status() {
+    var vmDao = jdbi.onDemand(VirtualMachineDao.class);
+    var vm = vmDao.findById(dbId);
+    return vm.status;
   }
 
   public List<Disk> getDisks() {

@@ -1,9 +1,9 @@
 package computer.matter.cluster.db.model;
 
-import computer.matter.cluster.common.ClusterDbTestBase;
-import computer.matter.cluster.model.StorageStatus;
+import computer.matter.common.test.ClusterDbTestBase;
 import computer.matter.db.cluster.StorageDao;
 import computer.matter.db.cluster.StorageDo;
+import computer.matter.storage.StorageStatus;
 import computer.matter.storage.StorageType;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +27,7 @@ class StorageDaoTest extends ClusterDbTestBase {
     storage.capacityInBytes = 1;
     storage.freeInBytes = 1;
     storage.url = UUID.randomUUID().toString();
-    storage.status = StorageStatus.INITIAL;
+    storage.status = computer.matter.storage.StorageStatus.INITIAL;
     storage.id = storageDao.insert(storage);
     var storage2 = storageDao.findByUUID(storage.uuid.toString());
     assertThat(storage).usingRecursiveComparison().isEqualTo(storage2);

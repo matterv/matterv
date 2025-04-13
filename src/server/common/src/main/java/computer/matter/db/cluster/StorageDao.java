@@ -64,6 +64,10 @@ public interface StorageDao {
   StorageDo findByHostAndMountPoint(@Bind("storageType") StorageType storageType, @Bind("hostUuid") UUID hostUuid,
                                     @Bind("mountedPath") String mountedPath);
 
+  @SqlQuery("select * from storage where name = :name and host_uuid = :hostUuid ")
+  @RegisterFieldMapper(StorageDo.class)
+  StorageDo findByNameAndHostUuid(@Bind("name") String storageName, @Bind("hostUuid") UUID hostUuid);
+
   @SqlUpdate("delete from storage")
   void deleteAll();
 }

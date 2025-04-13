@@ -3,6 +3,7 @@ package computer.matter.vcenter;
 import com.vmware.vim25.AboutInfo;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.ServiceContent;
+import computer.matter.cluster.api.VmApi;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.StorageDao;
 import org.jdbi.v3.core.Jdbi;
@@ -29,15 +30,13 @@ public class ServiceContentManager {
   private HostDao hostDao;
   private StorageDao storageDao;
   private Map<String, Class<?>> moTypeToClass = new HashMap<>();
-
-  public ServiceContentManager(Jdbi jdbi) {
+  private VmApi vmApi;
+  public ServiceContentManager(Jdbi jdbi, VmApi vmApi) {
     this.jdbi = jdbi;
+    this.vmApi = vmApi;
     this.hostDao = jdbi.onDemand(HostDao.class);
     this.storageDao = jdbi.onDemand(StorageDao.class);
     buildHierarchy();
-
-
-
   }
 
   SessionManager getSessionManager() {
@@ -47,14 +46,13 @@ public class ServiceContentManager {
 
   public void buildHierarchy() {
     moManager = new ManagedObjectManager(jdbi);
-    var vmManager = new VirtualMachineManager(moManager);
+    var vmManager = new VirtualMachineManager(moManager, vmApi, jdbi);
     var leaseManager = new HttpNfcLeaseManager(moManager);
     var resourcePool = new ResourcePool("Resources", "resgroup-9", leaseManager, vmManager);
     var network = new Network("VM Network", "HaNetwork-VM Network");
 
     var discoveredVmFolder = new VmFolder("Discovered virtual machine",  jdbi);
     var vmFolder = new RootVmFolder("vm", "folder-vm", List.of(discoveredVmFolder));
-    vmManager.vmFolder = vmFolder;
     var env = new EnvironmentBrowser("env1", "ha-env-browser-vmx-19", moManager);
 
     var clusterComputeResource = new ClusterComputeResource(jdbi, hostDao, "Cluster1", "domain-c8", resourcePool, env);
@@ -64,7 +62,7 @@ public class ServiceContentManager {
     rootFolder = new Folder("group-d1", "group-d1", List.of(datacenter));
 
     var ovfManager = new OvfManager("OvfManager", moManager);
-    var propertyCollector = new PropertyCollector("PropertyCollector");
+    var propertyCollector = new PropertyCollector("PropertyCollector", moManager);
 
     moManager.add(resourcePool);
     moManager.add(network);

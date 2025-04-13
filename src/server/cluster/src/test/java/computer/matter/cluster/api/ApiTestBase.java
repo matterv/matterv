@@ -1,7 +1,7 @@
 package computer.matter.cluster.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.common.test.ClusterDbTestBase;
 import computer.matter.cluster.db.model.ComputeClusterDao;
 import computer.matter.cluster.db.model.DataCenterDao;
 import computer.matter.cluster.db.model.DiskDao;

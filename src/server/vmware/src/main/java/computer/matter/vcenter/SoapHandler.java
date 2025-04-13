@@ -1,17 +1,9 @@
 package computer.matter.vcenter;
 
-import com.sun.istack.NotNull;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.databinding.DatabindingConfig;
-import com.sun.xml.ws.api.databinding.DatabindingFactory;
 import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
@@ -35,7 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -64,9 +55,7 @@ public class SoapHandler implements HttpHandler {
       throw new RuntimeException(e);
     }
 
-    var bindingId = BindingID.parse(serviceImpl.getClass());
-    var binding = BindingImpl.create(bindingId);
-    model = createSEIModel(null, serviceImpl.getClass(), new QName("urn:internalvim25", "EsxiVimServerService"), new QName("urn:internalvim25", "VimPortTypePort"), binding, null);
+    model = SoapModelBuilder.build(interfaceName, serviceImpl);
   }
 
   private void initializeMethodMap() throws ClassNotFoundException {
@@ -266,21 +255,6 @@ public class SoapHandler implements HttpHandler {
     return createSoapResponse(result, methodInfo);
   }
 
-  public AbstractSEIModelImpl createSEIModel(WSDLPort wsdlPort,
-                                             Class<?> implType, @NotNull QName serviceName, @NotNull QName portName, WSBinding binding,
-                                             SDDocumentSource primaryWsdl) {
-    DatabindingFactory fac = DatabindingFactory.newInstance();
-    DatabindingConfig config = new DatabindingConfig();
-    config.setEndpointClass(implType);
-    config.getMappingInfo().setServiceName(serviceName);
-    config.setWsdlPort(wsdlPort);
-    config.setClassLoader(implType.getClassLoader());
-    config.getMappingInfo().setPortName(portName);
-    if (primaryWsdl != null) config.setWsdlURL(primaryWsdl.getSystemId());
-
-    com.sun.xml.ws.db.DatabindingImpl rt = (com.sun.xml.ws.db.DatabindingImpl) fac.createRuntime(config);
-    return (AbstractSEIModelImpl) rt.getModel();
-  }
 
   private Message createSoapResponse(Object result, MethodInfo methodInfo) throws Exception {
 

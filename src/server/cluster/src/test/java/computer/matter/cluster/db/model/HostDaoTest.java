@@ -1,6 +1,6 @@
 package computer.matter.cluster.db.model;
 
-import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.common.test.ClusterDbTestBase;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.HostDo;
 import computer.matter.os.IpAddress;

@@ -26,7 +26,7 @@ public class ResourcePool extends ManagedObjectReference {
   }
 
   public ManagedObjectReference importVApp(ImportSpec spec, ManagedObjectReference folder, ManagedObjectReference host) {
-    var newVm = virtualMachineManager.createVm(((VirtualMachineImportSpec) spec).getConfigSpec());
+    var newVm = virtualMachineManager.createVm(((VirtualMachineImportSpec) spec).getConfigSpec(), host);
     vm.add(newVm);
     return leaseManager.create(newVm);
   }

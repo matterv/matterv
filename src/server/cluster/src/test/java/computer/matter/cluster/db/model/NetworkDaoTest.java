@@ -1,6 +1,6 @@
 package computer.matter.cluster.db.model;
 
-import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.common.test.ClusterDbTestBase;
 import computer.matter.db.cluster.NetworkDao;
 import computer.matter.db.cluster.NetworkDo;
 import computer.matter.network.NetworkType;

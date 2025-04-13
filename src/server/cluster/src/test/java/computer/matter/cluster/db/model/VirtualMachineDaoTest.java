@@ -1,6 +1,6 @@
 package computer.matter.cluster.db.model;
 
-import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.common.test.ClusterDbTestBase;
 import computer.matter.db.cluster.VirtualMachineDao;
 import computer.matter.db.cluster.VirtualMachineDo;
 import computer.matter.vm.VirtualMachineConfig;

@@ -94,8 +94,8 @@ public class App extends Application<AppConfig> {
                     deps.clock,
                     deps.apiClientProvider
             ));
-    environment.jersey()
-            .register(new VmApiImpl(deps.virtualMachineDao, deps.diskDao, jdbi, deps.jobClient, deps.jsonUtil));
+    var vmApi = new VmApiImpl(deps.virtualMachineDao, deps.diskDao, jdbi, deps.jobClient, deps.jsonUtil);
+    environment.jersey().register(vmApi);
     environment.jersey().register(new StorageApiImpl(deps.storageDao, deps.apiClientProvider, jdbi));
 
     environment.servlets().setSessionHandler(HttpsSessionHandler.getSessionHandler());
@@ -114,7 +114,7 @@ public class App extends Application<AppConfig> {
             .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
             .addMapping("/index.html", "/assets/*", "/");
 
-    var vcenterServer = new VcenterServer(jdbi);
+    var vcenterServer = new VcenterServer(jdbi, vmApi);
     vcenterServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getVcenterPort());
   }
 }

@@ -1,12 +1,11 @@
 package computer.matter.cluster.db.model;
 
-import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.common.test.ClusterDbTestBase;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DiskDaoTest extends ClusterDbTestBase {
 

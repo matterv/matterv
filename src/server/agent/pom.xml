@@ -94,11 +94,7 @@
             <artifactId>dropwizard-migrations</artifactId>
             <version>4.0.7</version>
         </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-testing</artifactId>
-            <version>4.0.7</version>
-        </dependency>
+
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-sqlobject</artifactId>
@@ -123,20 +119,6 @@
             <version>3.46.0.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>5.12.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.12.0</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 

@@ -5,15 +5,15 @@ import com.vmware.vim25.UserSession;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.GregorianCalendar;
+import java.util.UUID;
 
 public class SessionManager {
-  public String sessionId = "520bc232-8a83-95db-d4c0-94759433eb88";
 
   UserSession login(String username, String password, String locale) {
     try {
       DatatypeFactory factory = DatatypeFactory.newInstance();
       var userSession = new UserSession();
-      userSession.setKey(sessionId);
+      userSession.setKey(UUID.randomUUID().toString());
       userSession.setUserName(username);
       userSession.setFullName(username);
       userSession.setLoginTime(factory.newXMLGregorianCalendar(new GregorianCalendar()));

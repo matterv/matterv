@@ -6,17 +6,21 @@ import com.vmware.vim25.HttpNfcLeaseHostInfo;
 import com.vmware.vim25.HttpNfcLeaseInfo;
 import com.vmware.vim25.HttpNfcLeaseState;
 import com.vmware.vim25.ManagedObjectReference;
+import computer.matter.vm.VirtualMachineStatus;
+
+import java.util.UUID;
 
 public class HttpNfcLease extends ManagedObjectReference {
-  public HttpNfcLeaseState state = HttpNfcLeaseState.READY;
-  public HttpNfcLeaseInfo info;
+
   private VirtualMachine vm;
-
-  public HttpNfcLease(String value, VirtualMachine vm) {
+  public HttpNfcLease(VirtualMachine vm) {
     type = ManagedObjectType.HttpNfcLease.name();
-    this.value = value;
+    this.value = "session["+ UUID.randomUUID() + "]" + UUID.randomUUID();
+    this.vm = vm;
+  }
 
-    info = new HttpNfcLeaseInfo();
+  public HttpNfcLeaseInfo getInfo() {
+    var info = new HttpNfcLeaseInfo();
     info.setLease(this);
 
     info.setEntity(vm);
@@ -45,5 +49,14 @@ public class HttpNfcLease extends ManagedObjectReference {
     hostLeaseInfo.setSslThumbprint("1E:A4:89:6A:98:38:0A:99:3E:6F:13:44:EA:8F:21:52:4A:27:B4:07");
     leaseInfo.getHosts().add(hostLeaseInfo);
     info.getHostMap().add(leaseInfo);
+    return info;
+  }
+
+  public HttpNfcLeaseState state() {
+    return switch (vm.status()) {
+      case VirtualMachineStatus.CREATED -> HttpNfcLeaseState.READY;
+      case VirtualMachineStatus.FAILED -> HttpNfcLeaseState.ERROR;
+      default -> HttpNfcLeaseState.INITIALIZING;
+    };
   }
 }

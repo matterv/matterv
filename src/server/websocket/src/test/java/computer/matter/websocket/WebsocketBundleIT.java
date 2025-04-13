@@ -1,6 +1,6 @@
 package computer.matter.websocket;
 
-import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
+//import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +9,7 @@ import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
-@ExtendWith(DropwizardExtensionsSupport.class)
+//@ExtendWith(DropwizardExtensionsSupport.class)
 public class WebsocketBundleIT {
 
   @Test

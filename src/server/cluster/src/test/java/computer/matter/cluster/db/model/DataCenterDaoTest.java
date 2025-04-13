@@ -1,6 +1,6 @@
 package computer.matter.cluster.db.model;
 
-import computer.matter.cluster.common.ClusterDbTestBase;
+import computer.matter.common.test.ClusterDbTestBase;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

@@ -35,7 +35,7 @@ public class DataStore extends ManagedObjectReference {
     var hostMount = new DatastoreHostMount();
     hostMount.setKey(Host.create(host.id));
     var mountInfo = new HostMountInfo();
-    mountInfo.setPath("/vmfs/volumes/" + getValue());
+    mountInfo.setPath("/vmfs/volumes/" + storage.uuidOnHost);
     mountInfo.setAccessMode("readWrite");
     mountInfo.setAccessible(true);
     mountInfo.setMounted(true);
@@ -49,8 +49,8 @@ public class DataStore extends ManagedObjectReference {
 
     var summary = new DatastoreSummary();
     summary.setDatastore(this);
-    summary.setName(storage.name);
-    summary.setUrl("/vmfs/volumes/" + getValue());
+    summary.setName(storage.uuid.toString());
+    summary.setUrl("/vmfs/volumes/" + storage.uuidOnHost);
     summary.setCapacity(3863323082752L);
     summary.setFreeSpace(698096812032L);
     summary.setUncommitted(636537744259L);
@@ -80,8 +80,8 @@ public class DataStore extends ManagedObjectReference {
     var storageDao = jdbi.onDemand(StorageDao.class);
     var storage = storageDao.findById(dbId);
     var info = new VmfsDatastoreInfo();
-    info.setName(storage.name);
-    info.setUrl("/vmfs/volumes/" + getValue());
+    info.setName(storage.uuid.toString());
+    info.setUrl("/vmfs/volumes/" + storage.uuidOnHost);
     info.setFreeSpace(698096812032L);
     info.setMaxFileSize(70368744177664L);
     info.setMaxVirtualDiskCapacity(68169720922112L);
@@ -90,7 +90,7 @@ public class DataStore extends ManagedObjectReference {
     info.setMaxVirtualRDMFileSize(68169720922112L);
     var vmfs = new HostVmfsVolume();
     vmfs.setType("VMFS");
-    vmfs.setName(storage.name);
+    vmfs.setName(storage.uuid.toString());
     vmfs.setCapacity(3863323082752L);
     vmfs.setBlockSizeMb(1);
     vmfs.setBlockSize(1024);

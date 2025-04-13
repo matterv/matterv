@@ -1,6 +1,5 @@
 package computer.matter.vcenter;
 
-import com.vmware.vim25.HttpNfcLeaseState;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.ObjectUpdate;
 import com.vmware.vim25.ObjectUpdateKind;
@@ -12,33 +11,44 @@ import com.vmware.vim25.UpdateSet;
 import com.vmware.vim25.WaitOptions;
 
 public class PropertyCollector extends ManagedObjectReference {
-  public PropertyCollector(String value) {
+  private ManagedObjectManager managedObjectManager;
+  private ManagedObjectReference propObject;
+  public PropertyCollector(String value, ManagedObjectManager managedObjectManager) {
     type = ManagedObjectType.PropertyCollector.name();
     this.value = value;
+    this.managedObjectManager = managedObjectManager;
   }
 
   public ManagedObjectReference createFilter(PropertyFilterSpec spec, boolean partialUpdates) {
-    return new PropertyFilter("session[520bc232-8a83-95db-d4c0-94759433eb88]528d2c07-a8de-1b25-e68a-77e93e54bba8");
+    var propSet = spec.getPropSet();
+    if (propSet.getFirst().getType().equalsIgnoreCase(ManagedObjectType.HttpNfcLease.name())) {
+      var obj = spec.getObjectSet().getFirst().getObj();
+      propObject = obj;
+      return new PropertyFilter(obj.getValue());
+    }
+
+    throw new RuntimeException("Unknown filter spec: " + spec);
   }
 
   public UpdateSet waitForUpdatesEx(String version, WaitOptions options) {
     var updateSet = new UpdateSet();
     updateSet.setVersion("4");
     var filterUpdate = new PropertyFilterUpdate();
-    var filter = new PropertyFilter("session[520bc232-8a83-95db-d4c0-94759433eb88]528d2c07-a8de-1b25-e68a-77e93e54bba8");
+    var filter = new PropertyFilter(propObject.getValue());
     filterUpdate.setFilter(filter);
     var objectUpdate = new ObjectUpdate();
     objectUpdate.setKind(ObjectUpdateKind.MODIFY);
 
     var lease = new ManagedObjectReference();
-    lease.setType(ManagedObjectType.HttpNfcLease.name());
-    lease.setValue("session[520bc232-8a83-95db-d4c0-94759433eb88]528d2c07-a8de-1b25-e68a-77e93e54bba8");
+    lease.setType(propObject.getType());
+    lease.setValue(propObject.getValue());
     objectUpdate.setObj(lease);
 
+    var leaseObj = (HttpNfcLease)managedObjectManager.get(propObject);
     var propertyChange = new PropertyChange();
     propertyChange.setName("state");
     propertyChange.setOp(PropertyChangeOp.ASSIGN);
-    propertyChange.setVal(HttpNfcLeaseState.READY);
+    propertyChange.setVal(leaseObj.state());
     objectUpdate.getChangeSet().add(propertyChange);
     filterUpdate.getObjectSet().add(objectUpdate);
     updateSet.getFilterSet().add(filterUpdate);
