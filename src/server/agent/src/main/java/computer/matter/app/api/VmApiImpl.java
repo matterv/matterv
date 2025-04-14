@@ -105,6 +105,12 @@ public class VmApiImpl implements VmApi {
                     ).toList();
 
     requirement.cdrom = createVirtualMachineRequest.getCdrom();
+
+    PowerStatus powerStatus = PowerStatus.POWERON;
+    if (createVirtualMachineRequest.getPowerStatus() != null) {
+      powerStatus = createVirtualMachineRequest.getPowerStatus();
+    }
+    requirement.powerStatus = powerStatus;
     config.requirement = requirement;
     config.vmId = vm.uuid;
 

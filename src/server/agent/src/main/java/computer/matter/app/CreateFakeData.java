@@ -35,10 +35,6 @@ public class CreateFakeData {
       hostDao.insert(host);
     });
 
-    if (hostExists.get()) {
-      return;
-    }
-
     jdbi.useExtension(StorageDao.class, storageDao -> {
       var storage = new StorageDo();
       storage.storageType = StorageType.NFS;

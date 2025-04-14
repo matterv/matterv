@@ -6,6 +6,7 @@ import com.vmware.vim25.ServiceContent;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.StorageDao;
+import computer.matter.json.JsonUtil;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +28,14 @@ public class ServiceContentManager {
   Folder rootFolder;
   ManagedObjectManager moManager;
   private Jdbi jdbi;
+  private final JsonUtil jsonUtil;
   private HostDao hostDao;
   private StorageDao storageDao;
   private Map<String, Class<?>> moTypeToClass = new HashMap<>();
   private VmApi vmApi;
-  public ServiceContentManager(Jdbi jdbi, VmApi vmApi) {
+  public ServiceContentManager(Jdbi jdbi, JsonUtil jsonUtil, VmApi vmApi) {
     this.jdbi = jdbi;
+    this.jsonUtil = jsonUtil;
     this.vmApi = vmApi;
     this.hostDao = jdbi.onDemand(HostDao.class);
     this.storageDao = jdbi.onDemand(StorageDao.class);
@@ -46,12 +49,12 @@ public class ServiceContentManager {
 
   public void buildHierarchy() {
     moManager = new ManagedObjectManager(jdbi);
-    var vmManager = new VirtualMachineManager(moManager, vmApi, jdbi);
+    var vmManager = new VirtualMachineManager(moManager, vmApi, jdbi, jsonUtil);
     var leaseManager = new HttpNfcLeaseManager(moManager);
     var resourcePool = new ResourcePool("Resources", "resgroup-9", leaseManager, vmManager);
     var network = new Network("VM Network", "HaNetwork-VM Network");
 
-    var discoveredVmFolder = new VmFolder("Discovered virtual machine",  jdbi);
+    var discoveredVmFolder = new VmFolder("Discovered virtual machine",  jdbi, jsonUtil, vmApi);
     var vmFolder = new RootVmFolder("vm", "folder-vm", List.of(discoveredVmFolder));
     var env = new EnvironmentBrowser("env1", "ha-env-browser-vmx-19", moManager);
 

@@ -2,6 +2,7 @@ package computer.matter.agent.job.vmprovision;
 
 import computer.matter.host.model.CreateVirtualMachineRequestCdrom;
 import computer.matter.host.model.DiskController;
+import computer.matter.host.model.PowerStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +16,7 @@ public class VmProvisionRequirement {
   public List<DiskRequirement> diskRequirements;
   public List<NetworkRequirement> networkRequirements;
   public CreateVirtualMachineRequestCdrom cdrom;
+  public PowerStatus powerStatus;
 
   public static class DiskRequirement {
     public long id;

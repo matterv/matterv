@@ -14,6 +14,7 @@ import computer.matter.cluster.model.OsInfo;
 import computer.matter.cluster.model.OsType;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.StorageDao;
+import computer.matter.json.JsonUtil;
 import org.jdbi.v3.core.Jdbi;
 
 import java.util.Comparator;
@@ -28,13 +29,15 @@ public class VirtualMachineManager {
   private final ManagedObjectManager managedObjectManager;
   private VmApi vmApi;
   private Jdbi jdbi;
+  private final JsonUtil jsonUtil;
 
   private Pattern dataStorePattern = Pattern.compile("\\[(.*?)\\]");
 
-  public VirtualMachineManager(ManagedObjectManager managedObjectManager, VmApi vmApi, Jdbi jdbi) {
+  public VirtualMachineManager(ManagedObjectManager managedObjectManager, VmApi vmApi, Jdbi jdbi, JsonUtil jsonUtil) {
     this.managedObjectManager = managedObjectManager;
     this.vmApi = vmApi;
     this.jdbi = jdbi;
+    this.jsonUtil = jsonUtil;
   }
 
   private String getStorageName(String vmPath) {
@@ -113,6 +116,6 @@ public class VirtualMachineManager {
     request.setDisks(diskRequests);
     var rsp = vmApi.createVm(request);
     var vm = rsp.getVm();
-    return new VirtualMachine("vm-" + vm.getId(), jdbi);
+    return new VirtualMachine("vm-" + vm.getId(), vm.getUuid(), vmApi, jsonUtil);
   }
 }

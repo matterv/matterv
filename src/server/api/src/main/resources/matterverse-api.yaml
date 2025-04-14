@@ -665,6 +665,8 @@ components:
           type: string
         osInfo:
           $ref: './schema.yaml#/components/schemas/OsInfo'
+        powerStatus:
+          $ref: './schema.yaml#/components/schemas/PowerStatus'
         cdrom:
           type: object
           properties:

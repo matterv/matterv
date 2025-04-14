@@ -35,7 +35,7 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
   @Test
   void createVm() {
     var clusterEnv = setupCluster();
-    var scManager = new ServiceContentManager(jdbi, vmApi);
+    var scManager = new ServiceContentManager(jdbi, clusterEnv.jsonUtil(), vmApi);
     var vcenterVimServer = new VcenterVimServer(scManager);
     var xmlParser = new XmlParser(vcenterVimServer);
     var rsp = """
@@ -57,7 +57,7 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
     assertEquals("MyVM1", req.getSpec().getEntityConfig().getTag());
 
     var moMgr = new ManagedObjectManager(jdbi);
-    var vmManager = new VirtualMachineManager(moMgr, vmApi, jdbi);
+    var vmManager = new VirtualMachineManager(moMgr, vmApi, jdbi, clusterEnv.jsonUtil());
 
     var createVmRsp = new CreateVirtualMachineResponse();
     var mockVm = Mockito.mock(VirtualMachine.class);
@@ -67,5 +67,6 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
     var vm = vmManager.createVm(((VirtualMachineImportSpec)req.getSpec()).getConfigSpec(), req.getHost());
 
     assertEquals("vm-1", vm.getValue());
+
   }
 }

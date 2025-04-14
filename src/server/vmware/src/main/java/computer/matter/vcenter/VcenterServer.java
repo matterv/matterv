@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import computer.matter.cluster.api.VmApi;
+import computer.matter.json.JsonUtil;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,11 @@ public class VcenterServer {
   static final String xmlVersion = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><namespaces version=\"1.0\"><namespace><name>urn:vim25</name><version>8.0.3.0</version><priorVersions><version>7.0.2.1</version><version>7.0.2.0</version><version>7.0.1.1</version><version>7.0.1.0</version><version>7.0.0.2</version><version>7.0.0.0</version><version>6.9.1</version><version>6.8.7</version><version>6.7.3</version><version>6.7.2</version><version>6.7.1</version><version>6.7</version><version>6.5</version><version>6.0</version><version>5.5</version><version>5.1</version><version>5.0</version><version>4.1</version><version>4.0</version></priorVersions></namespace></namespaces>";
   private Jdbi jdbi;
   private VmApi vmApi;
-  public VcenterServer(Jdbi jdbi, VmApi vmApi) {
+  private final JsonUtil jsonUtil;
+  public VcenterServer(Jdbi jdbi, VmApi vmApi, JsonUtil jsonUtil) {
     this.jdbi = jdbi;
     this.vmApi = vmApi;
+    this.jsonUtil = jsonUtil;
   }
   private static void logRequest(HttpExchange exchange) throws IOException {
     logger.info("Received HTTP Request:");
@@ -88,7 +91,7 @@ public class VcenterServer {
         }
       });
 
-      var scManager = new ServiceContentManager(jdbi, vmApi);
+      var scManager = new ServiceContentManager(jdbi, jsonUtil, vmApi);
       var vcenterVimServer = new VcenterVimServer(scManager);
 
       var context = httpsServer.createContext("/sdk", new SoapHandler("com.vmware.vim25.VimPortType", vcenterVimServer));

@@ -2,16 +2,17 @@ package computer.matter.vcenter;
 
 import com.vmware.vim25.ArrayOfManagedObjectReference;
 import com.vmware.vim25.ManagedObjectReference;
-import com.vmware.vim25.VirtualDisk;
-import com.vmware.vim25.VirtualMachineConfigSpec;
-import computer.matter.db.cluster.VirtualMachineDao;
-import computer.matter.vm.VirtualMachineStatus;
-import org.jdbi.v3.core.Jdbi;
+import computer.matter.cluster.api.VmApi;
+import computer.matter.cluster.model.VMStatus;
+import computer.matter.json.JsonUtil;
+import computer.matter.vm.VirtualDisk;
+import computer.matter.vm.VirtualMachineConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -20,51 +21,45 @@ record Disk(String key, String importKey, String path) {
 
 public class VirtualMachine extends ManagedObjectReference {
   public ManagedObjectReference parent;
-  List<Task> recentTasks = new ArrayList<>();
-  private VirtualMachineConfigSpec config;
-  private Jdbi jdbi;
-  private long dbId;
 
-  public VirtualMachine(String value, Jdbi jdbi) {
+  private UUID vmUuid;
+  private VmApi vmApi;
+  private JsonUtil jsonUtil;
+  public VirtualMachine(String value, UUID vmUuid, VmApi vmApi, JsonUtil jsonUtil) {
     setType(ManagedObjectType.VirtualMachine.name());
     setValue(value);
-    this.jdbi = jdbi;
-    this.dbId = Long.parseLong(value.split("-")[1]);
+    this.vmUuid = vmUuid;
+    this.vmApi = vmApi;
+    this.jsonUtil = jsonUtil;
   }
 
-  public VirtualMachine(VirtualMachineConfigSpec config, String value) {
-    this.config = config;
-    setType(ManagedObjectType.VirtualMachine.name());
-    setValue(value);
-  }
 
   public String getName() {
-    var vmDao = jdbi.onDemand(VirtualMachineDao.class);
-    var vm = vmDao.findById(dbId);
-    return vm.name;
+    var vm = vmApi.getVm(vmUuid.toString());
+    return vm.getName();
   }
 
   public ArrayOfManagedObjectReference getRecentTask() {
     var r = new ArrayOfManagedObjectReference();
-    for (var t : recentTasks) {
-      r.getManagedObjectReference().add(t);
-    }
     return r;
   }
 
-  public VirtualMachineStatus status() {
-    var vmDao = jdbi.onDemand(VirtualMachineDao.class);
-    var vm = vmDao.findById(dbId);
-    return vm.status;
+  public VMStatus status() {
+    var vm = vmApi.getVm(vmUuid.toString());
+    return vm.getStatus();
   }
 
   public List<Disk> getDisks() {
-    var name = getName();
-    var controllerToDisksMap = config.getDeviceChange().stream()
-            .filter(virtualDeviceConfigSpec -> virtualDeviceConfigSpec.getDevice() instanceof VirtualDisk)
-            .map(d -> (VirtualDisk) d.getDevice())
-            .sorted(Comparator.comparing(VirtualDisk::getKey))
-            .collect(Collectors.groupingBy(VirtualDisk::getControllerKey, TreeMap::new, Collectors.toList()));
+
+    var vm = vmApi.getVm(vmUuid.toString());
+    var config = vm.getVmConfig();
+    var vmConfig = jsonUtil.fromJson(config, VirtualMachineConfig.class);
+
+    var controllerToDisksMap = vmConfig.devices.stream()
+            .filter(virtualDevice ->  virtualDevice instanceof VirtualDisk)
+            .map(d -> (VirtualDisk)d)
+            .sorted(Comparator.comparingLong(d -> d.id))
+            .collect(Collectors.groupingBy(d -> d.controllerId, TreeMap::new, Collectors.toList()));
 
     var controllerId = new AtomicInteger(0);
     var rsp = new ArrayList<Disk>();
@@ -72,10 +67,10 @@ public class VirtualMachine extends ManagedObjectReference {
     controllerToDisksMap.forEach((key, disks) -> {
       var diskIdInController = new AtomicInteger(0);
 
-      disks.stream().forEach(disk -> {
+      disks.forEach(disk -> {
         var d = new Disk(
                 "/" + value + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(),
-                "/" + name + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(), name + "-" + diskId.get() + ".vmdk");
+                "/" + vm.getName() + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(), vm.getName() + "-" + diskId.get() + ".vmdk");
         rsp.add(d);
         diskId.incrementAndGet();
         diskIdInController.incrementAndGet();

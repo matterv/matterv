@@ -100,6 +100,12 @@ public class CreateVmTask implements Task {
     createVirtualMachineRequest.setNetworks(req.getNetworks().stream().map(this::from).toList());
     createVirtualMachineRequest.setDiskControllers(req.getDiskControllers().stream().map(this::from).toList());
 
+    PowerStatus status = PowerStatus.POWERON;
+    if (req.getPowerStatus() != null) {
+      status = PowerStatus.fromValue(req.getPowerStatus().name());
+    }
+    createVirtualMachineRequest.setPowerStatus(status);
+
     return createVirtualMachineRequest;
   }
 

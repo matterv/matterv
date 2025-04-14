@@ -2,6 +2,7 @@ package computer.matter.agent.job.vmprovision;
 
 import computer.matter.agent.common.vm.QemuCli;
 import computer.matter.agent.db.model.VirtualMachineDao;
+import computer.matter.host.model.PowerStatus;
 import computer.matter.job.Job;
 import computer.matter.job.Task;
 import computer.matter.job.model.JobDao;
@@ -76,12 +77,19 @@ public class CreateVmTask implements Task {
     job.config = jsonUtil.toJson(jobConfig);
     jobDao.update(job);
 
-    qemuCli.createVm(jobConfig.vmConfig);
+    VirtualMachineStatus vmStatus;
+    if (jobConfig.requirement.powerStatus == PowerStatus.POWEROFF) {
+      logger.debug("VM will be in power off state");
+      vmStatus = VirtualMachineStatus.STOPPED;
+    } else {
+      qemuCli.createVm(jobConfig.vmConfig);
+      vmStatus = VirtualMachineStatus.RUNNING;
+    }
 
     var vmDao = jdbi.onDemand(VirtualMachineDao.class);
 
     var vm = vmDao.findByUUID(jobConfig.vmId.toString());
-    vm.status = VirtualMachineStatus.RUNNING;
+    vm.status = vmStatus;
     vm.config = jobConfig.vmConfig;
     vmDao.update(vm);
   }

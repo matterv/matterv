@@ -1,9 +1,11 @@
 package computer.matter.common.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.HostDo;
 import computer.matter.db.cluster.StorageDao;
 import computer.matter.db.cluster.StorageDo;
+import computer.matter.json.JsonUtil;
 import computer.matter.storage.StorageStatus;
 import computer.matter.storage.StorageType;
 
@@ -34,6 +36,8 @@ public class ClusterDbTestBase extends DbTestBase {
     storageDo.status = StorageStatus.READY;
     storageDao.insert(storageDo);
 
-    return new ClusterEnv(hostDo, List.of(storageDo));
+    var ob = new ObjectMapper();
+    var jsonUtil = new JsonUtil(ob);
+    return new ClusterEnv(hostDo, List.of(storageDo), jsonUtil);
   }
 }

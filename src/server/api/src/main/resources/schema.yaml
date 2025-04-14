@@ -255,6 +255,7 @@ components:
       type: string
       enum:
         - CREATING
+        - CREATED
         - STARTING
         - RUNNING
         - STOPPING
@@ -476,6 +477,8 @@ components:
             $ref: '#/components/schemas/NetworkRequest'
         osInfo:
           $ref: '#/components/schemas/OsInfo'
+        powerStatus:
+          $ref: '#/components/schemas/PowerStatus'
         cdrom:
           type: object
           properties:
@@ -682,6 +685,12 @@ components:
       enum:
         - Windows
         - Linux
+
+    PowerStatus:
+      type: string
+      enum:
+        - PowerOn
+        - PowerOff
     OsInfo:
       type: object
       properties:
