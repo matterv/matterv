@@ -46,7 +46,8 @@ public class VmApiImpl implements VmApi {
   private VirtualMachine fromVmDo(VirtualMachineDo vmDo) {
     var vm = new VirtualMachine();
     vm.setCpu(vmDo.cpu);
-    vm.setId(vmDo.uuid.toString());
+    vm.setId(String.valueOf(vmDo.id));
+    vm.setUuid(vmDo.uuid);
     vm.setName(vmDo.name);
     vm.setStatus(VMStatus.fromString(vmDo.status.name()));
     vm.setUuid(vmDo.uuid);
@@ -121,6 +122,12 @@ public class VmApiImpl implements VmApi {
   @Override
   public VirtualMachine getVm(String vmId) {
     var vm = virtualMachineDao.findByUuid(UUID.fromString(vmId));
+    return fromVmDo(vm);
+  }
+
+  @Override
+  public VirtualMachine getVmById(Long vmId) {
+    var vm = virtualMachineDao.findById(vmId);
     return fromVmDo(vm);
   }
 

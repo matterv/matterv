@@ -315,6 +315,9 @@ components:
       type: object
       properties:
         id:
+          type: integer
+          format: int64
+        uuid:
           type: string
         objectId:
           type: string
@@ -326,6 +329,7 @@ components:
           type: string
       required:
         - id
+        - uuid
         - objectId
         - status
         - progress

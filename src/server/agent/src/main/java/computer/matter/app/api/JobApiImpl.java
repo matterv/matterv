@@ -18,7 +18,8 @@ public class JobApiImpl implements JobApi {
 
   public computer.matter.host.model.Job getJobInfo(Job job) {
     var info = new computer.matter.host.model.Job();
-    info.setId(job.uuid.toString());
+    info.setId(job.id);
+    info.setUuid(job.uuid.toString());
     info.setObjectId(job.objectId);
     info.setStatus(AsyncRequestStatus.fromString(job.status.name().toLowerCase()));
     info.setType(job.type);
@@ -35,7 +36,7 @@ public class JobApiImpl implements JobApi {
       return rsp;
     }
     rsp.setItems(jobs);
-    rsp.setNextPage(String.valueOf(Long.parseLong(jobs.getLast().getId()) + 1));
+    rsp.setNextPage(String.valueOf(jobs.getLast().getId() + 1));
     return rsp;
   }
 

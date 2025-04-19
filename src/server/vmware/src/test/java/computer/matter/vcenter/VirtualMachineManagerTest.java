@@ -2,6 +2,7 @@ package computer.matter.vcenter;
 
 import com.vmware.vim25.ImportVAppRequestType;
 import com.vmware.vim25.VirtualMachineImportSpec;
+import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.cluster.model.CreateVirtualMachineResponse;
 import computer.matter.cluster.model.VirtualMachine;
@@ -21,6 +22,8 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
 
   @Mock
   private VmApi vmApi;
+  @Mock
+  private JobApi jobApi;
 
   @Test
   void testParse() {
@@ -35,9 +38,10 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
   @Test
   void createVm() {
     var clusterEnv = setupCluster();
-    var scManager = new ServiceContentManager(jdbi, clusterEnv.jsonUtil(), vmApi);
+    var scManager = new ServiceContentManager(jdbi, clusterEnv.jsonUtil(), vmApi, jobApi);
     var vcenterVimServer = new VcenterVimServer(scManager);
     var xmlParser = new XmlParser(vcenterVimServer);
+    var storageDo = clusterEnv.storages().getFirst();
     var rsp = """
             <?xml version="1.0" encoding="UTF-8"?>
             <soapenv:Envelope xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
@@ -55,9 +59,11 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
 
     var req = xmlParser.parse(rsp, ImportVAppRequestType.class);
     assertEquals("MyVM1", req.getSpec().getEntityConfig().getTag());
-
-    var moMgr = new ManagedObjectManager(jdbi);
-    var vmManager = new VirtualMachineManager(moMgr, vmApi, jdbi, clusterEnv.jsonUtil());
+    ((VirtualMachineImportSpec)req.getSpec()).getConfigSpec().getFiles().setVmPathName("[" + storageDo.uuid + "]");
+    var taskFactory = new TaskFactory(jobApi, vmApi, clusterEnv.jsonUtil());
+    var moFactory = new ManagedObjectFactory(clusterEnv.jsonUtil(), vmApi, jdbi, jobApi, taskFactory);
+    var moMgr = new ManagedObjectManager(moFactory);
+    var vmManager = new VirtualMachineManager(moMgr, vmApi, jdbi, clusterEnv.jsonUtil(), jobApi);
 
     var createVmRsp = new CreateVirtualMachineResponse();
     var mockVm = Mockito.mock(VirtualMachine.class);

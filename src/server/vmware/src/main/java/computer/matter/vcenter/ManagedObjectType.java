@@ -17,4 +17,6 @@ public enum ManagedObjectType {
   Task,
   ClusterComputeResource,
   VmFolder,
+  ManagedEntity,
+  Unknown
 }

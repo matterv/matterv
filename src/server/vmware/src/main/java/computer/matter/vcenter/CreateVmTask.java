@@ -7,7 +7,6 @@ import com.vmware.vim25.TaskReasonSystem;
 
 public class CreateVmTask extends Task {
   private final VirtualMachine vm;
-
   public CreateVmTask(String value, VirtualMachine vm) {
     super(value);
     this.vm = vm;
@@ -15,6 +14,8 @@ public class CreateVmTask extends Task {
 
   @Override
   public TaskInfo getInfo() {
+    var jobId = Long.parseLong(value.split("-")[1]);
+
     var taskInfo = new TaskInfo();
     taskInfo.setKey(value);
     var mo = new ManagedObjectReference();

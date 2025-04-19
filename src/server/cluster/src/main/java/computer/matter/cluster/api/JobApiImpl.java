@@ -15,7 +15,8 @@ public class JobApiImpl implements JobApi {
 
   public computer.matter.cluster.model.Job getJobInfo(Job job) {
     var info = new computer.matter.cluster.model.Job();
-    info.setId(job.uuid.toString());
+    info.setId(job.id);
+    info.setUuid(job.uuid.toString());
     info.setObjectId(job.objectId);
     info.setStatus(AsyncRequestStatus.fromString(job.status.name().toLowerCase()));
     info.setType(job.type);
@@ -37,8 +38,8 @@ public class JobApiImpl implements JobApi {
   }
 
   @Override
-  public computer.matter.cluster.model.Job queryJob(String jobId) {
-    var job = jobDao.findByUuid(jobId);
+  public computer.matter.cluster.model.Job queryJob(Long jobId) {
+    var job = jobDao.findById(jobId);
     return getJobInfo(job);
   }
 }

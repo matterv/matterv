@@ -2,6 +2,7 @@ package computer.matter.vcenter;
 
 import com.vmware.vim25.ArrayOfManagedObjectReference;
 import com.vmware.vim25.ManagedObjectReference;
+import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.cluster.model.VMStatus;
 import computer.matter.json.JsonUtil;
@@ -22,36 +23,46 @@ record Disk(String key, String importKey, String path) {
 public class VirtualMachine extends ManagedObjectReference {
   public ManagedObjectReference parent;
 
-  private UUID vmUuid;
   private VmApi vmApi;
   private JsonUtil jsonUtil;
-  public VirtualMachine(String value, UUID vmUuid, VmApi vmApi, JsonUtil jsonUtil) {
+  private final long vmId;
+  private final JobApi jobApi;
+  public VirtualMachine(String value, VmApi vmApi, JsonUtil jsonUtil, JobApi jobApi) {
     setType(ManagedObjectType.VirtualMachine.name());
     setValue(value);
-    this.vmUuid = vmUuid;
+    vmId = Long.parseLong(value.split("-")[1]);
     this.vmApi = vmApi;
     this.jsonUtil = jsonUtil;
+    this.jobApi = jobApi;
   }
 
 
   public String getName() {
-    var vm = vmApi.getVm(vmUuid.toString());
+    var vm = vmApi.getVmById(vmId);
     return vm.getName();
   }
 
   public ArrayOfManagedObjectReference getRecentTask() {
     var r = new ArrayOfManagedObjectReference();
+    var vm = vmApi.getVmById(vmId);
+
+    var jobs = jobApi.listJobsForObject(1, 100, vm.getUuid().toString());
+    var tasks = jobs.getItems().stream().map(job -> switch (job.getType()) {
+      case "CreateVm" -> new CreateVmTask("createvm-" + job.getId(), this);
+      default -> throw new RuntimeException("Unsupported job type: " + job.getType());
+    });
+    tasks.forEach(task -> r.getManagedObjectReference().add(task));
     return r;
   }
 
   public VMStatus status() {
-    var vm = vmApi.getVm(vmUuid.toString());
+    var vm = vmApi.getVmById(vmId);
     return vm.getStatus();
   }
 
   public List<Disk> getDisks() {
 
-    var vm = vmApi.getVm(vmUuid.toString());
+    var vm = vmApi.getVmById(vmId);
     var config = vm.getVmConfig();
     var vmConfig = jsonUtil.fromJson(config, VirtualMachineConfig.class);
 

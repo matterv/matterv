@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.json.JsonUtil;
 import org.jdbi.v3.core.Jdbi;
@@ -34,10 +35,12 @@ public class VcenterServer {
   private Jdbi jdbi;
   private VmApi vmApi;
   private final JsonUtil jsonUtil;
-  public VcenterServer(Jdbi jdbi, VmApi vmApi, JsonUtil jsonUtil) {
+  private final JobApi jobApi;
+  public VcenterServer(Jdbi jdbi, VmApi vmApi, JsonUtil jsonUtil, JobApi jobApi) {
     this.jdbi = jdbi;
     this.vmApi = vmApi;
     this.jsonUtil = jsonUtil;
+    this.jobApi = jobApi;
   }
   private static void logRequest(HttpExchange exchange) throws IOException {
     logger.info("Received HTTP Request:");
@@ -91,7 +94,7 @@ public class VcenterServer {
         }
       });
 
-      var scManager = new ServiceContentManager(jdbi, jsonUtil, vmApi);
+      var scManager = new ServiceContentManager(jdbi, jsonUtil, vmApi, jobApi);
       var vcenterVimServer = new VcenterVimServer(scManager);
 
       var context = httpsServer.createContext("/sdk", new SoapHandler("com.vmware.vim25.VimPortType", vcenterVimServer));

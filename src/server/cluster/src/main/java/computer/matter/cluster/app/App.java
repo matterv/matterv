@@ -5,6 +5,7 @@ import computer.matter.api.HttpsSessionHandler;
 import computer.matter.api.SessionAuthFilter;
 import computer.matter.cluster.api.AuthApiImpl;
 import computer.matter.cluster.api.DataCenterApiImpl;
+import computer.matter.cluster.api.JobApiImpl;
 import computer.matter.cluster.api.StorageApiImpl;
 import computer.matter.cluster.api.VmApiImpl;
 import computer.matter.cluster.db.model.UserDao;
@@ -96,6 +97,8 @@ public class App extends Application<AppConfig> {
             ));
     var vmApi = new VmApiImpl(deps.virtualMachineDao, deps.diskDao, jdbi, deps.jobClient, deps.jsonUtil);
     environment.jersey().register(vmApi);
+    var jobApi = new JobApiImpl(deps.jobDao);
+    environment.jersey().register(jobApi);
     environment.jersey().register(new StorageApiImpl(deps.storageDao, deps.apiClientProvider, jdbi));
 
     environment.servlets().setSessionHandler(HttpsSessionHandler.getSessionHandler());
@@ -114,7 +117,7 @@ public class App extends Application<AppConfig> {
             .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
             .addMapping("/index.html", "/assets/*", "/");
 
-    var vcenterServer = new VcenterServer(jdbi, vmApi, deps.jsonUtil);
+    var vcenterServer = new VcenterServer(jdbi, vmApi, deps.jsonUtil, jobApi);
     vcenterServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getVcenterPort());
   }
 }

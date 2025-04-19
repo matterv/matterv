@@ -28,6 +28,10 @@ public interface JobDao {
   @RegisterFieldMapper(Job.class)
   Job findByUuid(@Bind("uuid") String uuid);
 
+  @SqlQuery("select * from job where id = :id")
+  @RegisterFieldMapper(Job.class)
+  Job findById(@Bind("id") long id);
+
   @SqlQuery("select * from job where object_id = :objectId and status in (<status>)")
   @RegisterFieldMapper(Job.class)
   List<Job> findByObjectIdAndStatus(@Bind("objectId") String objectId, @BindList("status") List<JobStatus> status);
