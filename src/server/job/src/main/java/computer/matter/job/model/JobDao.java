@@ -32,9 +32,9 @@ public interface JobDao {
   @RegisterFieldMapper(Job.class)
   List<Job> findByObjectIdAndStatus(@Bind("objectId") String objectId, @BindList("status") List<JobStatus> status);
 
-  @SqlQuery("select * from job where object_id = :objectId")
+  @SqlQuery("select * from job where object_id = :objectId and id >= :page order by id limit :limit")
   @RegisterFieldMapper(Job.class)
-  List<Job> findByObjectId(@Bind("objectId") String objectId);
+  List<Job> findByObjectId(@Bind("objectId") String objectId, @Bind("page") long page, @Bind("limit") int limit);
 
   @SqlQuery("select * from job where status = 'QUEUED' order by start_time limit :batchSize")
   @RegisterFieldMapper(Job.class)

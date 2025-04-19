@@ -102,7 +102,7 @@ public class CreateVmTask implements Task {
 
     PowerStatus status = PowerStatus.POWERON;
     if (req.getPowerStatus() != null) {
-      status = PowerStatus.fromValue(req.getPowerStatus().name());
+      status = PowerStatus.fromValue(req.getPowerStatus().toString());
     }
     createVirtualMachineRequest.setPowerStatus(status);
 

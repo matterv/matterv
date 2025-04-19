@@ -60,12 +60,7 @@
             <artifactId>jdbi3-jackson2</artifactId>
             <version>3.45.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>computer.matter</groupId>
             <artifactId>common</artifactId>

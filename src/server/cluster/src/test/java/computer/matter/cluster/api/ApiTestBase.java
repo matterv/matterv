@@ -120,6 +120,7 @@ public class ApiTestBase extends ClusterDbTestBase {
     req3.setPort(1234);
     var rsp3 = datacenterApi.addHost(req3);
     jobClient.getJobScheduler().start();
+
     return new DataCenterInfo(null, null, rsp3.getId());
   }
 

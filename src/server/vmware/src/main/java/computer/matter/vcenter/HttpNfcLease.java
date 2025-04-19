@@ -7,7 +7,6 @@ import com.vmware.vim25.HttpNfcLeaseInfo;
 import com.vmware.vim25.HttpNfcLeaseState;
 import com.vmware.vim25.ManagedObjectReference;
 import computer.matter.cluster.model.VMStatus;
-import computer.matter.vm.VirtualMachineStatus;
 
 import java.util.UUID;
 
@@ -53,9 +52,9 @@ public class HttpNfcLease extends ManagedObjectReference {
     return info;
   }
 
-  public HttpNfcLeaseState state() {
+  public HttpNfcLeaseState getState() {
     return switch (vm.status()) {
-      case VMStatus.RUNNING -> HttpNfcLeaseState.READY;
+      case VMStatus.RUNNING, VMStatus.STOPPED -> HttpNfcLeaseState.READY;
       case VMStatus.FAILED -> HttpNfcLeaseState.ERROR;
       default -> HttpNfcLeaseState.INITIALIZING;
     };

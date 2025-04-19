@@ -43,7 +43,7 @@ public class VmApiImpl implements VmApi {
   }
 
 
-  static VirtualMachine fromVmDo(VirtualMachineDo vmDo) {
+  private VirtualMachine fromVmDo(VirtualMachineDo vmDo) {
     var vm = new VirtualMachine();
     vm.setCpu(vmDo.cpu);
     vm.setId(vmDo.uuid.toString());
@@ -58,6 +58,7 @@ public class VmApiImpl implements VmApi {
       vm.setVnc(vnc);
     }
 
+    vm.setVmConfig(jsonUtil.toJson(vmDo.config));
     vm.setHostId(vmDo.hostUuid.toString());
     return vm;
   }
@@ -151,7 +152,7 @@ public class VmApiImpl implements VmApi {
       return response;
     }
 
-    response.setItems(vms.stream().map(VmApiImpl::fromVmDo).toList());
+    response.setItems(vms.stream().map(this::fromVmDo).toList());
     response.setNextPage(String.valueOf(vms.getLast().id + 1));
     return response;
   }

@@ -48,7 +48,7 @@ public class PropertyCollector extends ManagedObjectReference {
     var propertyChange = new PropertyChange();
     propertyChange.setName("state");
     propertyChange.setOp(PropertyChangeOp.ASSIGN);
-    propertyChange.setVal(leaseObj.state());
+    propertyChange.setVal(leaseObj.getState());
     objectUpdate.getChangeSet().add(propertyChange);
     filterUpdate.getObjectSet().add(objectUpdate);
     updateSet.getFilterSet().add(filterUpdate);

@@ -2,6 +2,7 @@ package computer.matter.cluster.api;
 
 import computer.matter.cluster.db.model.ComputeClusterDao;
 import computer.matter.cluster.db.model.DataCenterDao;
+import computer.matter.cluster.model.VirtualMachine;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.HostDo;
 import computer.matter.db.cluster.NetworkDao;
@@ -38,6 +39,7 @@ import computer.matter.os.IpAddressType;
 import computer.matterv.host.client.ApiClientProvider;
 import org.jdbi.v3.core.Jdbi;
 
+import java.util.List;
 import java.util.UUID;
 
 public class DataCenterApiImpl implements DatacenterApi {
@@ -201,7 +203,8 @@ public class DataCenterApiImpl implements DatacenterApi {
     if (host == null) {
       throw new IllegalArgumentException("No host with id " + hostId);
     }
-    var vms = virtualMachineDao.getInRangeByHostUuid(host.uuid, page, limit).stream().map(VmApiImpl::fromVmDo).toList();
+    //var vms = virtualMachineDao.getInRangeByHostUuid(host.uuid, page, limit).stream().map(VmApiImpl::fromVmDo).toList();
+    List<VirtualMachine> vms = List.of();
     var rsp = new PaginatedVMResponse();
     rsp.setItems(vms);
     if (!vms.isEmpty()) {

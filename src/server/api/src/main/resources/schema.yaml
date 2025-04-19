@@ -350,16 +350,16 @@ components:
       required:
         - items
     PaginatedJobResponse:
-      allOf:
-        - $ref: '#/components/schemas/PaginatedResponse'
-        - type: object
-          properties:
-            data:
-              type: array
-              items:
-                $ref: '#/components/schemas/Job'
-          required:
-            - data
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        next_page:
+          type: string
+      required:
+        - items
     PaginatedHostResponse:
       type: object
       properties:

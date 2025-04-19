@@ -12,6 +12,7 @@ import computer.matter.cluster.model.DiskController;
 import computer.matter.cluster.model.DiskRequest;
 import computer.matter.cluster.model.OsInfo;
 import computer.matter.cluster.model.OsType;
+import computer.matter.cluster.model.PowerStatus;
 import computer.matter.db.cluster.HostDao;
 import computer.matter.db.cluster.StorageDao;
 import computer.matter.json.JsonUtil;
@@ -55,7 +56,7 @@ public class VirtualMachineManager {
 
     var storageName = getStorageName(spec.getFiles().getVmPathName());
     var storageDao = jdbi.onDemand(StorageDao.class);
-    var storageDo = storageDao.findByNameAndHostUuid(storageName, hostDo.uuid);
+    var storageDo = storageDao.findByUUID(storageName);
     request.setName(spec.getName());
     request.setCpu(spec.getNumCPUs().longValue());
     request.setMemory(spec.getMemoryMB() * 1024 * 1024);
@@ -114,6 +115,7 @@ public class VirtualMachineManager {
       return req;
     }).toList();
     request.setDisks(diskRequests);
+    request.setPowerStatus(PowerStatus.POWEROFF);
     var rsp = vmApi.createVm(request);
     var vm = rsp.getVm();
     return new VirtualMachine("vm-" + vm.getId(), vm.getUuid(), vmApi, jsonUtil);

@@ -1,12 +1,9 @@
-package computer.matter.app.api;
+package computer.matter.cluster.api;
 
-import computer.matter.host.api.JobApi;
-import computer.matter.host.model.AsyncRequestStatus;
-import computer.matter.host.model.PaginatedJobResponse;
-import computer.matter.host.model.PaginationInfo;
+import computer.matter.cluster.model.AsyncRequestStatus;
 import computer.matter.job.Job;
+import computer.matter.cluster.model.PaginatedJobResponse;
 import computer.matter.job.model.JobDao;
-import computer.matter.pagination.PaginationUtil;
 
 public class JobApiImpl implements JobApi {
 
@@ -16,8 +13,8 @@ public class JobApiImpl implements JobApi {
     this.jobDao = jobDao;
   }
 
-  public computer.matter.host.model.Job getJobInfo(Job job) {
-    var info = new computer.matter.host.model.Job();
+  public computer.matter.cluster.model.Job getJobInfo(Job job) {
+    var info = new computer.matter.cluster.model.Job();
     info.setId(job.uuid.toString());
     info.setObjectId(job.objectId);
     info.setStatus(AsyncRequestStatus.fromString(job.status.name().toLowerCase()));
@@ -28,19 +25,19 @@ public class JobApiImpl implements JobApi {
 
   @Override
   public PaginatedJobResponse listJobsForObject(Integer page, Integer limit, String objectId) {
-    var jobs = jobDao.findByObjectId(objectId, page, limit).stream().map(this::getJobInfo).toList();
+    var jobs = jobDao.findByObjectId(objectId, page, limit);
     var rsp = new PaginatedJobResponse();
-
     if (jobs.isEmpty()) {
       return rsp;
     }
-    rsp.setItems(jobs);
-    rsp.setNextPage(String.valueOf(Long.parseLong(jobs.getLast().getId()) + 1));
+
+    rsp.setItems(jobs.stream().map(this::getJobInfo).toList());
+    rsp.setNextPage(String.valueOf(jobs.getLast().id + 1));
     return rsp;
   }
 
   @Override
-  public computer.matter.host.model.Job queryJob(String jobId) {
+  public computer.matter.cluster.model.Job queryJob(String jobId) {
     var job = jobDao.findByUuid(jobId);
     return getJobInfo(job);
   }
