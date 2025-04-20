@@ -247,6 +247,7 @@ public class DataCenterApiImpl implements DatacenterApi {
     host.setId(hostDo.uuid.toString());
     host.setName(hostDo.name);
     host.setMemory(hostDo.memory);
+    host.setEndpoint(hostDo.endpoint);
     host.setStatus(HostStatus.fromString(hostDo.status.name()));
     if (hostDo.status != HostDo.Status.UNINITIALIZED) {
       var storages = storageDao.getAllByHostId(hostDo.uuid, true);

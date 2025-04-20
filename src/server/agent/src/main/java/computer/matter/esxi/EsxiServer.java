@@ -1,4 +1,4 @@
-package computer.matter.vcenter;
+package computer.matter.esxi;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -19,9 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -30,20 +28,9 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.Executors;
 
-public class VcenterServer {
-  static final Logger logger = LoggerFactory.getLogger(VcenterServer.class);
-  static final String xmlVersion = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><namespaces version=\"1.0\"><namespace><name>urn:vim25</name><version>8.0.3.0</version><priorVersions><version>7.0.2.1</version><version>7.0.2.0</version><version>7.0.1.1</version><version>7.0.1.0</version><version>7.0.0.2</version><version>7.0.0.0</version><version>6.9.1</version><version>6.8.7</version><version>6.7.3</version><version>6.7.2</version><version>6.7.1</version><version>6.7</version><version>6.5</version><version>6.0</version><version>5.5</version><version>5.1</version><version>5.0</version><version>4.1</version><version>4.0</version></priorVersions></namespace></namespaces>";
-  private Jdbi jdbi;
-  private VmApi vmApi;
-  private final JsonUtil jsonUtil;
-  private final JobApi jobApi;
-  private final DatacenterApi datacenterApi;
-  public VcenterServer(Jdbi jdbi, VmApi vmApi, JsonUtil jsonUtil, JobApi jobApi, DatacenterApi datacenterApi) {
-    this.jdbi = jdbi;
-    this.vmApi = vmApi;
-    this.jsonUtil = jsonUtil;
-    this.jobApi = jobApi;
-    this.datacenterApi = datacenterApi;
+public class EsxiServer {
+  static final Logger logger = LoggerFactory.getLogger(EsxiServer.class);
+  public EsxiServer() {
   }
   private static void logRequest(HttpExchange exchange) throws IOException {
     logger.info("Received HTTP Request:");
@@ -97,26 +84,7 @@ public class VcenterServer {
         }
       });
 
-      var scManager = new ServiceContentManager(jdbi, jsonUtil,datacenterApi, vmApi, jobApi);
-      var vcenterVimServer = new VcenterVimServer(scManager);
-
-      var context = httpsServer.createContext("/sdk", new SoapHandler("com.vmware.vim25.VimPortType", vcenterVimServer));
-      context.getAttributes().put("com.sun.net.httpserver.exchange.keepalive", "120");
-
-      HttpHandler handler2 = exchange -> {
-        logRequest(exchange);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/xml");
-        exchange.getResponseHeaders().set("Content-Length", String.valueOf(xmlVersion.getBytes(StandardCharsets.UTF_8).length));
-
-        // Send the response
-        try (OutputStream os = exchange.getResponseBody()) {
-          exchange.sendResponseHeaders(200, xmlVersion.getBytes(StandardCharsets.UTF_8).length);
-          os.write(xmlVersion.getBytes(StandardCharsets.UTF_8));
-        }
-      };
-
-      httpsServer.createContext("/sdk/vimServiceVersions.xml", handler2);
+      httpsServer.createContext("/ha-nfc", new NfcReceiver());
 
       httpsServer.setExecutor(Executors.newFixedThreadPool(10)); // Provide a thread pool
 

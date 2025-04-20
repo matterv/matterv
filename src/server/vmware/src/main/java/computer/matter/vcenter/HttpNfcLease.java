@@ -8,11 +8,14 @@ import com.vmware.vim25.HttpNfcLeaseState;
 import com.vmware.vim25.ManagedObjectReference;
 import computer.matter.cluster.model.VMStatus;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.UUID;
 
 public class HttpNfcLease extends ManagedObjectReference {
 
   private VirtualMachine vm;
+  private final String leaseId = UUID.randomUUID().toString();
   public HttpNfcLease(VirtualMachine vm) {
     type = ManagedObjectType.HttpNfcLease.name();
     this.value = "session["+ UUID.randomUUID() + "]" + UUID.randomUUID();
@@ -24,11 +27,21 @@ public class HttpNfcLease extends ManagedObjectReference {
     info.setLease(this);
 
     info.setEntity(vm);
+    var endpoint = vm.host().getEndpoint();
+    String host = null;
+    try {
+      var url = new URL(endpoint);
+      host = url.getHost();
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+
+    var esxiEndpoint = "https://" + host + ":8445";
     vm.getDisks().forEach(disk -> {
       var deviceUrl = new HttpNfcLeaseDeviceUrl();
       deviceUrl.setKey(disk.key());
       deviceUrl.setImportKey(disk.importKey());
-      deviceUrl.setUrl("https://127.0.0.1:8545/ha-nfc/5276b11e-4ba2-7ba4-4855-bbb3dce3ae3e/" + disk.path());
+      deviceUrl.setUrl(esxiEndpoint + "/ha-nfc/" + leaseId + "/" + disk.path());
       deviceUrl.setSslThumbprint("1E:A4:89:6A:98:38:0A:99:3E:6F:13:44:EA:8F:21:52:4A:27:B4:07");
       deviceUrl.setDisk(true);
       deviceUrl.setTargetId(disk.path());
@@ -45,7 +58,7 @@ public class HttpNfcLease extends ManagedObjectReference {
     leaseInfo.setDatastoreKey("ha");
 
     var hostLeaseInfo = new HttpNfcLeaseHostInfo();
-    hostLeaseInfo.setUrl("https://127.0.0.1:8545/ha-nfc/5276b11e-4ba2-7ba4-4855-bbb3dce3ae3e/");
+    hostLeaseInfo.setUrl(esxiEndpoint + "/ha-nfc/"+ leaseId + "/");
     hostLeaseInfo.setSslThumbprint("1E:A4:89:6A:98:38:0A:99:3E:6F:13:44:EA:8F:21:52:4A:27:B4:07");
     leaseInfo.getHosts().add(hostLeaseInfo);
     info.getHostMap().add(leaseInfo);

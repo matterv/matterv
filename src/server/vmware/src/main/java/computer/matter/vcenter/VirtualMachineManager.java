@@ -6,6 +6,7 @@ import com.vmware.vim25.VirtualController;
 import com.vmware.vim25.VirtualDisk;
 import com.vmware.vim25.VirtualMachineConfigSpec;
 import com.vmware.vim25.VirtualSCSIController;
+import computer.matter.cluster.api.DatacenterApi;
 import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.cluster.model.CreateVirtualMachineOnHostRequest;
@@ -33,15 +34,17 @@ public class VirtualMachineManager {
   private Jdbi jdbi;
   private final JsonUtil jsonUtil;
   private final JobApi jobApi;
+  private final DatacenterApi datacenterApi;
 
   private Pattern dataStorePattern = Pattern.compile("\\[(.*?)\\]");
 
-  public VirtualMachineManager(ManagedObjectManager managedObjectManager, VmApi vmApi, Jdbi jdbi, JsonUtil jsonUtil, JobApi jobApi) {
+  public VirtualMachineManager(ManagedObjectManager managedObjectManager, VmApi vmApi, Jdbi jdbi, JsonUtil jsonUtil, JobApi jobApi, DatacenterApi datacenterApi) {
     this.managedObjectManager = managedObjectManager;
     this.vmApi = vmApi;
     this.jdbi = jdbi;
     this.jsonUtil = jsonUtil;
     this.jobApi = jobApi;
+    this.datacenterApi = datacenterApi;
   }
 
   private String getStorageName(String vmPath) {
@@ -121,6 +124,6 @@ public class VirtualMachineManager {
     request.setPowerStatus(PowerStatus.POWEROFF);
     var rsp = vmApi.createVm(request);
     var vm = rsp.getVm();
-    return new VirtualMachine("vm-" + vm.getId(), vmApi, jsonUtil, jobApi);
+    return new VirtualMachine("vm-" + vm.getId(), vmApi, jsonUtil, datacenterApi, jobApi);
   }
 }

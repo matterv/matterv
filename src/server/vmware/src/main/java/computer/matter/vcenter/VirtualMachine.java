@@ -2,8 +2,10 @@ package computer.matter.vcenter;
 
 import com.vmware.vim25.ArrayOfManagedObjectReference;
 import com.vmware.vim25.ManagedObjectReference;
+import computer.matter.cluster.api.DatacenterApi;
 import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
+import computer.matter.cluster.model.Host;
 import computer.matter.cluster.model.VMStatus;
 import computer.matter.json.JsonUtil;
 import computer.matter.vm.VirtualDisk;
@@ -25,9 +27,11 @@ public class VirtualMachine extends ManagedObjectReference {
 
   private VmApi vmApi;
   private JsonUtil jsonUtil;
+  private final DatacenterApi datacenterApi;
   private final long vmId;
   private final JobApi jobApi;
-  public VirtualMachine(String value, VmApi vmApi, JsonUtil jsonUtil, JobApi jobApi) {
+  public VirtualMachine(String value, VmApi vmApi, JsonUtil jsonUtil, DatacenterApi datacenterApi, JobApi jobApi) {
+    this.datacenterApi = datacenterApi;
     setType(ManagedObjectType.VirtualMachine.name());
     setValue(value);
     vmId = Long.parseLong(value.split("-")[1]);
@@ -60,6 +64,11 @@ public class VirtualMachine extends ManagedObjectReference {
     return vm.getStatus();
   }
 
+  public Host host() {
+    var vm = vmApi.getVmById(vmId);
+    return datacenterApi.getHost(vm.getHostId());
+  }
+
   public List<Disk> getDisks() {
 
     var vm = vmApi.getVmById(vmId);
@@ -81,7 +90,7 @@ public class VirtualMachine extends ManagedObjectReference {
       disks.forEach(disk -> {
         var d = new Disk(
                 "/" + value + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(),
-                "/" + vm.getName() + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(), vm.getName() + "-" + diskId.get() + ".vmdk");
+                "/" + vm.getName() + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(), vm.getHostId() + "-" + diskId.get() + ".vmdk");
         rsp.add(d);
         diskId.incrementAndGet();
         diskIdInController.incrementAndGet();

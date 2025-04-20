@@ -6,7 +6,14 @@ import org.eclipse.jetty.server.Server;
 
 public class ServerFactoryWrapper implements ServerFactory {
   private final WebsocketHandler handler;
+
+  public ServerFactory getServerFactory() {
+    return serverFactory;
+  }
+
   private final ServerFactory serverFactory;
+
+
 
   public ServerFactoryWrapper(ServerFactory serverFactory, WebsocketHandler handler) {
     this.serverFactory = serverFactory;

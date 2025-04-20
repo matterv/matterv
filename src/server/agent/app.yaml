@@ -20,11 +20,10 @@ logging:
 vmMetadataRootDir: "/var/run/matterv-host/vms"
 
 webRootDir: "/opt/matterv/host/web"
+esxiPort: 8445
 
 server:
   applicationConnectors:
-    - type: http
-      port: 8442
     - type: https
       port: 8443
       keyStorePath: "/opt/matterv/host/certs/host.jks"

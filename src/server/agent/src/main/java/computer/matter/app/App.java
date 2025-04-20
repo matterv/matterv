@@ -10,14 +10,18 @@ import computer.matter.app.api.HostApiImpl;
 import computer.matter.app.api.JobApiImpl;
 import computer.matter.app.api.StorageApiImpl;
 import computer.matter.app.api.VmApiImpl;
+import computer.matter.esxi.EsxiServer;
 import computer.matter.websocket.EndpointInfo;
+import computer.matter.websocket.ServerFactoryWrapper;
 import computer.matter.websocket.WebsocketBundle;
 import io.dropwizard.core.Application;
+import io.dropwizard.core.server.DefaultServerFactory;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.jdbi3.JdbiFactory;
+import io.dropwizard.jetty.HttpsConnectorFactory;
 import io.dropwizard.migrations.MigrationsBundle;
 import jakarta.servlet.DispatcherType;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -72,7 +76,9 @@ public class App extends Application<AppConfig> {
   @Override
   public void run(AppConfig configuration, Environment environment) {
     configureCors(environment);
-
+    var f = (ServerFactoryWrapper)configuration.getServerFactory();
+    var sf = (DefaultServerFactory)f.getServerFactory();
+    var c = (HttpsConnectorFactory)sf.getApplicationConnectors().getFirst();
 
     var factory = new JdbiFactory();
     var jdbi = factory
@@ -106,5 +112,8 @@ public class App extends Application<AppConfig> {
     environment.servlets()
         .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
         .addMapping("/*");
+
+    var esxiServer = new EsxiServer();
+    esxiServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getEsxiPort());
   }
 }

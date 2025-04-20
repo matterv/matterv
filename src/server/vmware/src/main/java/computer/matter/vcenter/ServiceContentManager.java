@@ -3,6 +3,7 @@ package computer.matter.vcenter;
 import com.vmware.vim25.AboutInfo;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.ServiceContent;
+import computer.matter.cluster.api.DatacenterApi;
 import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.db.cluster.HostDao;
@@ -30,14 +31,16 @@ public class ServiceContentManager {
   ManagedObjectManager moManager;
   private Jdbi jdbi;
   private final JsonUtil jsonUtil;
+  private final DatacenterApi datacenterApi;
   private HostDao hostDao;
   private StorageDao storageDao;
   private Map<String, Class<?>> moTypeToClass = new HashMap<>();
   private VmApi vmApi;
   private final JobApi jobApi;
-  public ServiceContentManager(Jdbi jdbi, JsonUtil jsonUtil, VmApi vmApi, JobApi jobApi) {
+  public ServiceContentManager(Jdbi jdbi, JsonUtil jsonUtil, DatacenterApi datacenterApi, VmApi vmApi, JobApi jobApi) {
     this.jdbi = jdbi;
     this.jsonUtil = jsonUtil;
+    this.datacenterApi = datacenterApi;
     this.vmApi = vmApi;
     this.hostDao = jdbi.onDemand(HostDao.class);
     this.storageDao = jdbi.onDemand(StorageDao.class);
@@ -51,15 +54,15 @@ public class ServiceContentManager {
 
 
   public void buildHierarchy() {
-    var taskFactory = new TaskFactory(jobApi, vmApi, jsonUtil);
-    var moFactory = new ManagedObjectFactory(jsonUtil, vmApi, jdbi, jobApi, taskFactory);
+    var taskFactory = new TaskFactory(jobApi, vmApi, jsonUtil, datacenterApi);
+    var moFactory = new ManagedObjectFactory(jsonUtil, vmApi, jdbi, jobApi, taskFactory, datacenterApi);
     moManager = new ManagedObjectManager(moFactory);
-    var vmManager = new VirtualMachineManager(moManager, vmApi, jdbi, jsonUtil, jobApi);
+    var vmManager = new VirtualMachineManager(moManager, vmApi, jdbi, jsonUtil, jobApi, datacenterApi);
     var leaseManager = new HttpNfcLeaseManager(moManager);
     var resourcePool = new ResourcePool("Resources", "resgroup-9", leaseManager, vmManager);
     var network = new Network("VM Network", "HaNetwork-VM Network");
 
-    var discoveredVmFolder = new VmFolder("Discovered virtual machine",  jdbi, jsonUtil, vmApi, jobApi);
+    var discoveredVmFolder = new VmFolder("Discovered virtual machine",  jdbi, jsonUtil, vmApi, jobApi, datacenterApi);
     var vmFolder = new RootVmFolder("vm", "folder-vm", List.of(discoveredVmFolder));
     var env = new EnvironmentBrowser("env1", "ha-env-browser-vmx-19", moManager);
 

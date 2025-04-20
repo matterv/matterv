@@ -243,6 +243,8 @@ components:
           $ref: '#/components/schemas/HostStats'
         id:
           type: string
+        endpoint:
+          type: string
       required:
         - name
         - cpu

@@ -80,21 +80,21 @@ public class App extends Application<AppConfig> {
     environment.jersey().setUrlPattern("/api/*");
     var deps = new AppBootstrap().bootstrap(jdbi, configuration);
 
-    environment.jersey().register(
-            new DataCenterApiImpl(
-                    deps.dataCenterDao,
-                    deps.computeClusterDao,
-                    deps.hostDao,
-                    deps.virtualMachineDao,
-                    deps.storageDao,
-                    deps.networkDao,
-                    deps.nodeDescendentsDao,
-                    jdbi,
-                    deps.jobClient,
-                    deps.jsonUtil,
-                    deps.clock,
-                    deps.apiClientProvider
-            ));
+    var dcApi = new DataCenterApiImpl(
+            deps.dataCenterDao,
+            deps.computeClusterDao,
+            deps.hostDao,
+            deps.virtualMachineDao,
+            deps.storageDao,
+            deps.networkDao,
+            deps.nodeDescendentsDao,
+            jdbi,
+            deps.jobClient,
+            deps.jsonUtil,
+            deps.clock,
+            deps.apiClientProvider
+    );
+    environment.jersey().register(dcApi);
     var vmApi = new VmApiImpl(deps.virtualMachineDao, deps.diskDao, jdbi, deps.jobClient, deps.jsonUtil);
     environment.jersey().register(vmApi);
     var jobApi = new JobApiImpl(deps.jobDao);
@@ -117,7 +117,7 @@ public class App extends Application<AppConfig> {
             .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
             .addMapping("/index.html", "/assets/*", "/");
 
-    var vcenterServer = new VcenterServer(jdbi, vmApi, deps.jsonUtil, jobApi);
+    var vcenterServer = new VcenterServer(jdbi, vmApi, deps.jsonUtil, jobApi, dcApi);
     vcenterServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getVcenterPort());
   }
 }

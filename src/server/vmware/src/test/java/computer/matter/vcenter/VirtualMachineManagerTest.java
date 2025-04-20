@@ -2,6 +2,7 @@ package computer.matter.vcenter;
 
 import com.vmware.vim25.ImportVAppRequestType;
 import com.vmware.vim25.VirtualMachineImportSpec;
+import computer.matter.cluster.api.DatacenterApi;
 import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.cluster.model.CreateVirtualMachineResponse;
@@ -24,6 +25,8 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
   private VmApi vmApi;
   @Mock
   private JobApi jobApi;
+  @Mock
+  private DatacenterApi datacenterApi;
 
   @Test
   void testParse() {
@@ -38,7 +41,7 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
   @Test
   void createVm() {
     var clusterEnv = setupCluster();
-    var scManager = new ServiceContentManager(jdbi, clusterEnv.jsonUtil(), vmApi, jobApi);
+    var scManager = new ServiceContentManager(jdbi, clusterEnv.jsonUtil(), datacenterApi, vmApi, jobApi);
     var vcenterVimServer = new VcenterVimServer(scManager);
     var xmlParser = new XmlParser(vcenterVimServer);
     var storageDo = clusterEnv.storages().getFirst();
@@ -60,10 +63,10 @@ public class VirtualMachineManagerTest extends ClusterDbTestBase {
     var req = xmlParser.parse(rsp, ImportVAppRequestType.class);
     assertEquals("MyVM1", req.getSpec().getEntityConfig().getTag());
     ((VirtualMachineImportSpec)req.getSpec()).getConfigSpec().getFiles().setVmPathName("[" + storageDo.uuid + "]");
-    var taskFactory = new TaskFactory(jobApi, vmApi, clusterEnv.jsonUtil());
-    var moFactory = new ManagedObjectFactory(clusterEnv.jsonUtil(), vmApi, jdbi, jobApi, taskFactory);
+    var taskFactory = new TaskFactory(jobApi, vmApi, clusterEnv.jsonUtil(), datacenterApi);
+    var moFactory = new ManagedObjectFactory(clusterEnv.jsonUtil(), vmApi, jdbi, jobApi, taskFactory, datacenterApi);
     var moMgr = new ManagedObjectManager(moFactory);
-    var vmManager = new VirtualMachineManager(moMgr, vmApi, jdbi, clusterEnv.jsonUtil(), jobApi);
+    var vmManager = new VirtualMachineManager(moMgr, vmApi, jdbi, clusterEnv.jsonUtil(), jobApi, datacenterApi);
 
     var createVmRsp = new CreateVirtualMachineResponse();
     var mockVm = Mockito.mock(VirtualMachine.class);

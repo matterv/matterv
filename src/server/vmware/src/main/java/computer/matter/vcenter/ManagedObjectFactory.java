@@ -1,6 +1,7 @@
 package computer.matter.vcenter;
 
 import com.vmware.vim25.ManagedObjectReference;
+import computer.matter.cluster.api.DatacenterApi;
 import computer.matter.cluster.api.JobApi;
 import computer.matter.cluster.api.VmApi;
 import computer.matter.json.JsonUtil;
@@ -12,13 +13,15 @@ public class ManagedObjectFactory {
   private final Jdbi jdbi;
   private final JobApi jobApi;
   private final TaskFactory taskFactory;
+  private final DatacenterApi datacenterApi;
 
-  public ManagedObjectFactory(JsonUtil jsonUtil, VmApi vmApi, Jdbi jdbi, JobApi jobApi, TaskFactory taskFactory) {
+  public ManagedObjectFactory(JsonUtil jsonUtil, VmApi vmApi, Jdbi jdbi, JobApi jobApi, TaskFactory taskFactory, DatacenterApi datacenterApi) {
     this.jsonUtil = jsonUtil;
     this.vmApi = vmApi;
     this.jdbi = jdbi;
     this.jobApi = jobApi;
     this.taskFactory = taskFactory;
+    this.datacenterApi = datacenterApi;
   }
 
   public ManagedObjectReference create(ManagedObjectReference mor) {
@@ -36,9 +39,9 @@ public class ManagedObjectFactory {
     }
 
     return switch (moType) {
-      case ManagedObjectType.VirtualMachine -> new VirtualMachine(mor.getValue(), vmApi, jsonUtil, jobApi);
+      case ManagedObjectType.VirtualMachine -> new VirtualMachine(mor.getValue(), vmApi, jsonUtil,datacenterApi, jobApi);
       case ManagedObjectType.HostSystem -> new Host(mor.getValue(), jdbi);
-      case ManagedObjectType.VmFolder -> new VmFolder(mor.getValue(), jdbi, jsonUtil, vmApi, jobApi);
+      case ManagedObjectType.VmFolder -> new VmFolder(mor.getValue(), jdbi, jsonUtil, vmApi, jobApi, datacenterApi);
       case ManagedObjectType.Datastore -> new DataStore(mor.getValue(), jdbi);
       case ManagedObjectType.Task -> taskFactory.createTask(mor.getValue());
       default -> throw new RuntimeException("Unsupported type: " + moType);

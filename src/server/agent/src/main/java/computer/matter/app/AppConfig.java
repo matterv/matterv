@@ -20,6 +20,18 @@ public class AppConfig extends Configuration {
   @NotNull
   private int vmStopWaitInSeconds;
 
+  public int getEsxiPort() {
+    return esxiPort;
+  }
+
+  public void setEsxiPort(int esxiPort) {
+    this.esxiPort = esxiPort;
+  }
+
+  @Valid
+  @NotNull
+  private int esxiPort;
+
   public @Valid @NotNull String getWebRootDir() {
     return webRootDir;
   }
