@@ -127,7 +127,9 @@ public class OvfManager extends ManagedObjectReference {
           configSpec.getDeviceChange().add(disk1);
 
           var fileItem = new OvfFileItem();
-          fileItem.setDeviceId("/" + cisp.getEntityName() + "/ParaVirtualSCSIController0:0");
+          var hrefs = diskInfo.href().split("/");
+          var controllerPath = hrefs[hrefs.length - 1];
+          fileItem.setDeviceId("/" + cisp.getEntityName() + "/" + controllerPath);
           fileItem.setPath(diskInfo.href());
           fileItem.setCompressionMethod("");
           fileItem.setSize(0L);

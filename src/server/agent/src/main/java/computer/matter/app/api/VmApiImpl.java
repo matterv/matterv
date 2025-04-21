@@ -162,7 +162,8 @@ public class VmApiImpl implements VmApi {
     var vmDao = jdbi.onDemand(VirtualMachineDao.class);
     var jobDao = jdbi.onDemand(JobDao.class);
     var pendingJobs = jobDao.findByObjectIdAndStatus(vmId, JobStatus.notInTerminalState());
-    return fromVmDo(vmDao.findByUUID(vmId), pendingJobs.stream().findFirst());
+    var vm = fromVmDo(vmDao.findByUUID(vmId), pendingJobs.stream().findFirst());
+    return vm;
   }
 
   @Override

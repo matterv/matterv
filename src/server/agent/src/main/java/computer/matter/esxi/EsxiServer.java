@@ -7,7 +7,7 @@ import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import computer.matter.cluster.api.DatacenterApi;
 import computer.matter.cluster.api.JobApi;
-import computer.matter.cluster.api.VmApi;
+import computer.matter.host.api.VmApi;
 import computer.matter.json.JsonUtil;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
@@ -30,7 +30,13 @@ import java.util.concurrent.Executors;
 
 public class EsxiServer {
   static final Logger logger = LoggerFactory.getLogger(EsxiServer.class);
-  public EsxiServer() {
+
+  private final VmApi vmApi;
+  private final JsonUtil jsonUtil;
+
+  public EsxiServer(VmApi vmApi, JsonUtil jsonUtil) {
+    this.vmApi = vmApi;
+    this.jsonUtil = jsonUtil;
   }
   private static void logRequest(HttpExchange exchange) throws IOException {
     logger.info("Received HTTP Request:");
@@ -84,7 +90,7 @@ public class EsxiServer {
         }
       });
 
-      httpsServer.createContext("/ha-nfc", new NfcReceiver());
+      httpsServer.createContext("/ha-nfc", new NfcReceiver(vmApi, jsonUtil));
 
       httpsServer.setExecutor(Executors.newFixedThreadPool(10)); // Provide a thread pool
 

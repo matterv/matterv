@@ -54,6 +54,7 @@ public class VmApiImpl implements VmApi {
     vm.setMemory(vmDo.memoryInBytes);
 
     if (vmDo.uuidOnHost != null) {
+      vm.setUuidOnHost(vmDo.uuidOnHost.toString());
       var vnc = new Vnc();
       vnc.setVmId(vmDo.uuidOnHost.toString());
       vm.setVnc(vnc);

@@ -90,7 +90,7 @@ public class VirtualMachine extends ManagedObjectReference {
       disks.forEach(disk -> {
         var d = new Disk(
                 "/" + value + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(),
-                "/" + vm.getName() + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(), vm.getHostId() + "-" + diskId.get() + ".vmdk");
+                "/" + vm.getName() + "/ParaVirtualSCSIController" + controllerId.get() + ":" + diskIdInController.get(), vm.getUuidOnHost() + "-" + diskId.get() + ".vmdk");
         rsp.add(d);
         diskId.incrementAndGet();
         diskIdInController.incrementAndGet();

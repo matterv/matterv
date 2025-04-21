@@ -94,7 +94,8 @@ public class App extends Application<AppConfig> {
 
     environment.jersey().register(
         new HostApiImpl(jdbi, b.physicalNetworkProvider, b.localStorageProvider, b.jobClient, b.jsonUtil));
-    environment.jersey().register(new VmApiImpl(b.jobClient, jdbi, b.jsonUtil));
+    var vmApi = new VmApiImpl(b.jobClient, jdbi, b.jsonUtil);
+    environment.jersey().register(vmApi);
     environment.jersey().register(new JobApiImpl(b.jobDao));
     environment.jersey().register(new StorageApiImpl(jdbi, b.storageFactory));
     environment.jersey().setUrlPattern("/api");
@@ -113,7 +114,7 @@ public class App extends Application<AppConfig> {
         .addServlet("assets", new FileBasedAssets(configuration.getWebRootDir()))
         .addMapping("/*");
 
-    var esxiServer = new EsxiServer();
+    var esxiServer = new EsxiServer(vmApi, b.jsonUtil);
     esxiServer.start(c.getKeyStorePath(), c.getKeyStorePassword(), configuration.getEsxiPort());
   }
 }

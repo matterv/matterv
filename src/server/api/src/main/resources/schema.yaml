@@ -304,6 +304,8 @@ components:
           type: string
         vmConfig:
           type: string
+        uuidOnHost:
+          type: string
       required:
         - name
         - status
